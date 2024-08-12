@@ -31,7 +31,7 @@ class CircularEdge(Edge):
     radius: float
     clockwise: bool
 
-    def __init__(self, edge_id: str, start: Node, end: Node, center: np.ndarray, traffic_light: Optional[TrafficLight]=None, clockwise: bool=False) -> None:
+    def __init__(self, edge_id: str, start: Node, end: Node, center: np.ndarray, clockwise: bool=False, traffic_light: Optional[TrafficLight]=None) -> None:
         Edge.__init__(self, edge_id, start, end, traffic_light)
         self.radius = np.linalg.norm(start.position - center)
         self.center = center

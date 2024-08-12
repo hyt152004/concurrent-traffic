@@ -47,14 +47,12 @@ class TrafficLight:
     cycle_duration: int
     id: str
     node: Node
-    identifier: str # eg horizontal, vertical, horizontal_left_turn
     time_to_switch: dict[TrafficState, int]
     prev_dt: int
 
-    def __init__(self, id: str, node_pos: Node, identifier: str) -> None:
+    def __init__(self, id: str, node_pos: Node) -> None:
         self.id = id
         self.node = node_pos
-        self.identifier = identifier
         self.state = TrafficState.GREEN # will be changed by traffic_master according to the identifier/type
         self.time_in_state = 0 # set later by traffic_master
         self.cycle_duration = 0 # set later by traffic_master

@@ -27,7 +27,7 @@ from .render import render_world, render_manager, render_vehicles, render_toolba
 from .update import update_world
 from .helper import scroll_handler
 
-def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager, traffic_types: list[tuple], traffic_lights: list[TrafficLight]) -> None:
+def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager, traffic_master: TrafficMaster) -> None:
     """Initializes and runs the pygame simulator. Requires initialization of lanes, manager, vehicles."""
     pygame.init()
     screen = pygame.display.set_mode((ORIGINAL_SCREEN_WIDTH, ORIGINAL_SCREEN_HEIGHT), pygame.RESIZABLE)
@@ -96,8 +96,6 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
 
     buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed]
 
-    traffic_master = TrafficMaster(traffic_types, traffic_lights)
-
     while running:
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
@@ -132,7 +130,6 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             vehicle_event_loop(vehicle, time_elapsed)
 
         if standard_traffic:
-            # traffic_master.sequence()
             t_master_event_loop(traffic_master, time_elapsed) # change the details of each traffic light
 
         # vehicle removal 

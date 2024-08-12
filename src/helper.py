@@ -77,10 +77,13 @@ def load_edges(loaded_edges: object, edges: list[Edge], node_dict: dict[str, Nod
     for edge in loaded_edges:
         if edge["id"] in edge_dict:
             raise ValueError(f"Duplicate edge ID found: {edge['id']}")
+        t_light = None
+        if edge.get("traffic_light"):
+            t_light = edge["light"]
         if edge.get("center"):
-            new_edge = CircularEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]], np.array(edge["center"]), clockwise=edge["clockwise"])
+            new_edge = CircularEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]], np.array(edge["center"]), clockwise=edge["clockwise"], traffic_light=t_light)
         else:
-            new_edge = StraightEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]])
+            new_edge = StraightEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]], t_light)
         edge_dict[edge["id"]] = new_edge
         edges.append(new_edge)
     return edge_dict
@@ -136,22 +139,36 @@ def load_vehicles(loaded_vehicles: object, vehicles: list[Vehicle], route_dict: 
         vehicles.append(new_vehicle)
     return vehicle_dict
 
-def load_traffic_lights(loaded_lights: object, traffic_types: list[tuple], traffic_lights: list[TrafficLight], node_dict: dict[str, Node]) -> tuple[dict[str, tuple], dict[str, TrafficLight]]:
-    """Return id -> Tuple of dictionary of types of traffic lights and their attributes, and dictionary of traffight lights."""
-    light_dict, type_dict = {}, {}
-    for obj in loaded_lights:
-        if obj.get("type"):
-            if obj["type"] in type_dict:
-                raise ValueError(f"Duplicate traffic type found: {obj['type']}")
-            type = (obj["type"], obj["red_duration"], obj["yellow_duration"], obj["green_duration"], TrafficState[obj["initial_state"]])
-            type_dict[obj["type"]] = type
-            traffic_types.append(type)
-        else:
-            if obj["id"] in light_dict:
-                raise ValueError(f"Duplicate traffic_light ID found: {obj['id']}")
-            if obj["identifier"] not in type_dict:
-                raise KeyError(f"Identifier '{obj['identifier']}' not found in type_dict")
-            new_light = TrafficLight(obj["id"], node_dict[obj["node_position"]], obj["identifier"])
-            light_dict[obj["id"]] = new_light
-            traffic_lights.append(new_light)
-    return type_dict, light_dict
+def load_traffic_lights(loaded_lights: object, intersections_dict: dict[tuple, tuple], traffic_lights: list[TrafficLight], node_dict: dict[str, Node]) -> dict[str, TrafficLight]:
+    """Return id -> dictionary of traffic lights."""
+    # light_dict:
+    # light["id"]) : light["node_position"]
+    light_dict = {}
+    for light in loaded_lights:
+        if light_dict.get(light["id"]) == light["node_position"]:
+            raise ValueError(f"Duplicate traffic_light found: id: {light['id']}, node_position: {light['node_position']}.")
+        if not any(light["id"] in key for key in intersections_dict.keys()):
+            raise KeyError(f"Id '{light['id']}' not found in intersections.")
+        new_light = TrafficLight(light["id"], node_dict[light["node_position"]])
+        light_dict[light["id"]] = new_light
+        traffic_lights.append(new_light)
+    return light_dict
+
+def load_traffic_master(loaded_intersections: object, intersections: list[tuple]) -> dict[tuple[str], tuple[int]]:
+    """Return id -> Dictionary of intersections"""
+    #interection_dict: 
+    # (upcycle, downcycle): (green, yellow, red)
+    # intersection list:
+    # (upcycle, downcycle, green, yellow, red)
+    intersection_dict = {}
+    for intersection in loaded_intersections:
+        key = intersection["upcycle"], intersection["downcycle"]
+        if any(k in existing_key for existing_key in intersection_dict for k in key):
+            raise ValueError(f"Duplicate intersection upcycle/downcycle found: {key[0]}/{key[1]}")
+        color_details = (intersection["cycle"]["green"], intersection["cycle"]["yellow"], intersection["cycle"]["red"])
+        intersection_dict[key] = color_details
+        intersections.append(key + color_details)
+        
+    return intersection_dict
+
+

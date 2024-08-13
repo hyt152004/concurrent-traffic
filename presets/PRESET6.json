@@ -75,6 +75,19 @@
     {"id": "route_7", "source": "edge_1", "intermediate": [ "edge_9"], "target": "edge_2", "comment": "right from south"}
   ],
 
+  "traffic_master_intersections": [
+    {
+      "cycle": {"green": 4, "yellow": 1, "red": 5},
+      "upcycle": "eglington",
+      "downcycle": "towncentre"
+    }
+    ],
+
+    "traffic_lights": [
+      {"id": "eglington", "node_position": "node_9"},
+      {"id": "towncentre", "node_position": "node_10"}
+    ],
+  
   "manager": {
     "position": [0, 0],
     "radius": 50

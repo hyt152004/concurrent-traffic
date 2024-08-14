@@ -214,3 +214,32 @@ def render_title(screen) -> None:
     FONT = pygame.font.SysFont("Segoe UI", 15, bold=True, italic=False)
     text_surface = FONT.render(f"Concurent Traffic v0.0.2", True, (255, 255, 255))
     screen.blit(text_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+6))
+
+def render_red_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
+    """Render function for Vehicles."""
+    for vehicle in vehicles:
+        vehicle_screen_width = world_to_screen_scalar(screen, vehicle.width, zoom_factor)
+        vehicle_screen_length = world_to_screen_scalar(screen, vehicle.length, zoom_factor)
+
+        img = pygame.transform.smoothscale(vehicle.image, (vehicle_screen_length, vehicle_screen_width))
+        vehicle_angle = direction_at_route_position(vehicle.route, vehicle.route_position)
+        img = pygame.transform.rotate(img, vehicle_angle)
+        vehicle_center_point = route_position_to_world_position(vehicle.route, vehicle.route_position)
+        vehicle_center_screen_pos = world_to_screen_vector(screen, vehicle_center_point, zoom_factor)
+
+        img_size = img.get_size()
+        
+        hue_surface = pygame.Surface(img_size)
+        hue_surface.fill((255,0,0))
+        hue_surface.set_alpha(100)
+        
+        img_with_hue = img.copy()
+        img_with_hue.blit(hue_surface, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
+
+        img_with_hue_rect = img_with_hue.get_rect()
+        img_with_hue_rect.center = vehicle_center_screen_pos
+        
+        screen.blit(img_with_hue, img_with_hue_rect)
+
+
+

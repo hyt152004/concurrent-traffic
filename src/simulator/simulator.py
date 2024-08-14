@@ -21,9 +21,9 @@ from manager.manager import Manager, manager_event_loop, reset, detect_collision
 from classes.node import Node
 from classes.edge import Edge
 from classes.route import Route, route_position_to_world_position
-from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render
+from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_red_vehicles
 from .update import update_world
-from .helper import scroll_handler, world_to_screen_scalar
+from .helper import scroll_handler, world_to_screen_scalar, world_to_screen_vector
 
 def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager) -> None:
     """Initializes and runs the pygame simulator. Requires initialization of lanes, manager, vehicles."""
@@ -139,10 +139,12 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             update_world(delta_time * playback_speed_factor, vehicles)
             time_elapsed += delta_time * playback_speed_factor
 
-        collision_check, vehicle_position = detect_collisions(manager, vehicles, delta_time, time_elapsed)
+        collision_check, pos = detect_collisions(manager, vehicles, time_elapsed)
 
         if collision_check == True:
             is_run = False
+
+            render_red_vehicles(screen, pos)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

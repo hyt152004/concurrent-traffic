@@ -5,7 +5,7 @@ from itertools import combinations
 from scipy.optimize import minimize_scalar
 from random import randint
 
-CAR_COLLISION_DISTANCE = 3 # meters
+CAR_COLLISION_DISTANCE = 2.9 # meters
 MINIMUM_CRUISING_SPEED = 0
 
 class Collision:
@@ -247,23 +247,22 @@ def _compute_command(elapsed_time: float) -> tuple[np.array, np.array]:
     a = [randint(1, 3), randint(-3, 3), 3]
     return np.array(t), np.array(a)
 
-def detect_collisions(manager: Manager, vehicles: list[Vehicle], delta_time: float, cur_time: float) -> list[Collision]:
+def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> list[Collision]:
     collision = False
     vehicle_pairs = combinations(manager.vehicles, 2)
     car_info = []
+    pos = []
 
-    for vehicle in vehicles:
-        car_position = []
-    
-        for vehicle_pair in vehicle_pairs:
-            wp0 = route_position_to_world_position(vehicle_pair[0].route, vehicle.route_position)
-            wp1 = route_position_to_world_position(vehicle_pair[1].route, vehicle.route_position)
-            distance = np.linalg.norm(wp1 - wp0)
-            
-            if distance <= CAR_COLLISION_DISTANCE:
-                collision = True
-                car_info = [vehicle_pair[0].name, vehicle_pair[1].name, cur_time]
-                car_position = np.array([wp0, wp1])
-                print(f"Collision detected between {car_info[0]} and {car_info[1]} at time: {car_info[2]}")
+    for vehicle_pair in vehicle_pairs:
+        wp0 = route_position_to_world_position(vehicle_pair[0].route, vehicle_pair[0].route_position)
+        wp1 = route_position_to_world_position(vehicle_pair[1].route, vehicle_pair[1].route_position)
+        distance = np.linalg.norm(wp1 - wp0)
+        
+        if distance <= CAR_COLLISION_DISTANCE:
+            collision = True
+            car_info = [vehicle_pair[0].name, vehicle_pair[1].name, cur_time]
+            pos = [vehicle_pair[0], vehicle_pair[1]]
+            print(f"Collision detected between {car_info[0]} and {car_info[1]} at time: {car_info[2]}")
+            print(f"distance: {distance}")
 
-    return collision, car_position
+    return collision, pos

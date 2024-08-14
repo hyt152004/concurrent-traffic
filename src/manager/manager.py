@@ -6,7 +6,7 @@ from scipy.optimize import minimize_scalar
 from random import randint
 import logging
 
-CAR_COLLISION_DISTANCE = 2.9 # meters
+CAR_COLLISION_DISTANCE = 3 # meters
 MINIMUM_CRUISING_SPEED = 0
 
 class Collision:
@@ -49,8 +49,7 @@ def reset(manager: Manager) -> None:
 def manager_event_loop(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> None:
     """Event loop for Manager. Updates manager.vehicles if a Vehicle enters its radius. Also recalculates and sends Commands on update of manager.vehicles."""
     if _update_manager_vehicle_list(manager, vehicles):
-        # _compute_and_send_acceleration_commands(manager, cur_time)
-        pass
+        _compute_and_send_acceleration_commands(manager, cur_time)
 
 def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle]) -> bool:
     """Return True if new vehicles have been added to manager.vehicles."""
@@ -252,7 +251,6 @@ def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float
     collision = False
     vehicle_pairs = combinations(manager.vehicles, 2)
     car_info = []
-    pos = []
 
     for vehicle_pair in vehicle_pairs:
         wp0 = route_position_to_world_position(vehicle_pair[0].route, vehicle_pair[0].route_position)
@@ -262,8 +260,11 @@ def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float
         if distance <= CAR_COLLISION_DISTANCE:
             collision = True
             car_info = [vehicle_pair[0].name, vehicle_pair[1].name, cur_time]
-            pos = [vehicle_pair[0], vehicle_pair[1]]
+
+            vehicle_pair[0].collided = True
+            vehicle_pair[1].collided = True
+
             print(f"Collision detected between {car_info[0]} and {car_info[1]} at time: {car_info[2]}")
             print(f"distance: {distance}")
 
-    return collision, pos
+    return collision

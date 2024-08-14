@@ -18,6 +18,7 @@ class Vehicle:
     width: float              = 2.23            # float representing width of car in meters. orthogonal to direction
     length: float             = 4.90            # float representing length of car in meters. parallel to direction
     pivot_distance: float     = 1.25            # float representing distance from pivot to center.
+    collided: bool            = False           # if true, will render car red.
     image: Surface
 
     command: Command          = Command(np.array([0]), np.array([0]))             # Command

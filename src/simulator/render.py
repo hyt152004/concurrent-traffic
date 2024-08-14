@@ -70,14 +70,33 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
         img = pygame.transform.smoothscale(vehicle.image, (vehicle_screen_length, vehicle_screen_width))
         vehicle_angle = direction_at_route_position(vehicle.route, vehicle.route_position)
         img = pygame.transform.rotate(img, vehicle_angle)
-        car_rect = img.get_rect()
-        car_rect.center = vehicle_center_screen_pos
-        screen.blit(img, car_rect)
+
+        if vehicle.collided == True:
+            img_size = img.get_size()
+        
+            hue_surface = pygame.Surface(img_size)
+            hue_surface.fill((255,0,0))
+            hue_surface.set_alpha(100)
+            
+            img_with_hue = img.copy()
+            img_with_hue.blit(hue_surface, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
+
+            car_rect = img_with_hue.get_rect()
+            car_rect.center = vehicle_center_screen_pos
+            
+            screen.blit(img_with_hue, car_rect)         
+        
+        else: 
+            car_rect = img.get_rect()
+            car_rect.center = vehicle_center_screen_pos
+            screen.blit(img, car_rect)
+
         car_collision_screen_distance = world_to_screen_scalar(screen, CAR_COLLISION_DISTANCE/2, zoom_factor)
         pygame.draw.circle(screen, "red", vehicle_center_screen_pos, car_collision_screen_distance, 1)
         vehicle_text_font = pygame.font.SysFont('Consolas', 12)
         text_surface = vehicle_text_font.render(vehicle.name, True, (139, 69, 19))
         screen.blit(text_surface, (car_rect.center[0]-(vehicle_text_font.size(vehicle.name)[0])/2, car_rect.center[1]-vehicle_screen_length))
+
 
 def render_background(screen: Surface) -> None:
     """Render function for background."""
@@ -215,31 +234,6 @@ def render_title(screen) -> None:
     text_surface = FONT.render(f"Concurent Traffic v0.0.2", True, (255, 255, 255))
     screen.blit(text_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+6))
 
-def render_red_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
-    """Render function for Vehicles."""
-    for vehicle in vehicles:
-        vehicle_screen_width = world_to_screen_scalar(screen, vehicle.width, zoom_factor)
-        vehicle_screen_length = world_to_screen_scalar(screen, vehicle.length, zoom_factor)
-
-        img = pygame.transform.smoothscale(vehicle.image, (vehicle_screen_length, vehicle_screen_width))
-        vehicle_angle = direction_at_route_position(vehicle.route, vehicle.route_position)
-        img = pygame.transform.rotate(img, vehicle_angle)
-        vehicle_center_point = route_position_to_world_position(vehicle.route, vehicle.route_position)
-        vehicle_center_screen_pos = world_to_screen_vector(screen, vehicle_center_point, zoom_factor)
-
-        img_size = img.get_size()
-        
-        hue_surface = pygame.Surface(img_size)
-        hue_surface.fill((255,0,0))
-        hue_surface.set_alpha(100)
-        
-        img_with_hue = img.copy()
-        img_with_hue.blit(hue_surface, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
-
-        img_with_hue_rect = img_with_hue.get_rect()
-        img_with_hue_rect.center = vehicle_center_screen_pos
-        
-        screen.blit(img_with_hue, img_with_hue_rect)
 
 
 

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="legacy_logos">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/venv/lib/python3.12/site-packages/pygame/docs/generated/_static/legacy_logos.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -72,21 +72,22 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
         img = pygame.transform.rotate(img, vehicle_angle)
 
         if vehicle.collided == True:
+            # gets size of image, creates a surface, and fills with with translucent red
             img_size = img.get_size()
-        
             hue_surface = pygame.Surface(img_size)
             hue_surface.fill((255,0,0))
             hue_surface.set_alpha(100)
             
+            # blits hue_surface (red surface) onto img_with_hue (copy of img)
             img_with_hue = img.copy()
             img_with_hue.blit(hue_surface, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
-
+            # get the center of the car
             car_rect = img_with_hue.get_rect()
             car_rect.center = vehicle_center_screen_pos
-            
+            # blit red overlay car onto screen
             screen.blit(img_with_hue, car_rect)         
         
-        else: 
+        else: # else display car w/o red overlay
             car_rect = img.get_rect()
             car_rect.center = vehicle_center_screen_pos
             screen.blit(img, car_rect)

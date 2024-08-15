@@ -253,14 +253,16 @@ def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float
     car_info = []
 
     for vehicle_pair in vehicle_pairs:
+        # find two cars world position and calculate the distance between two cars
         wp0 = route_position_to_world_position(vehicle_pair[0].route, vehicle_pair[0].route_position)
         wp1 = route_position_to_world_position(vehicle_pair[1].route, vehicle_pair[1].route_position)
         distance = np.linalg.norm(wp1 - wp0)
         
         if distance <= CAR_COLLISION_DISTANCE:
-            collision = True
+            collision = True # just for screen pausing
             car_info = [vehicle_pair[0].name, vehicle_pair[1].name, cur_time]
 
+            # changes the boolean to true (see vehicle.py -> vehicle.collided)
             vehicle_pair[0].collided = True
             vehicle_pair[1].collided = True
 

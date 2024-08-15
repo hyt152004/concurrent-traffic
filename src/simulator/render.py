@@ -119,17 +119,17 @@ def render_manager(screen: Surface, manager: Manager) -> None:
     pygame.draw.circle(screen, "green", manager_screen_pos, circle_radius)
     
     for i, vehicle in enumerate(manager.vehicles):
-        font = pygame.font.SysFont('Segoe UI', 15)
+        font = pygame.font.SysFont('Consolas', 15)
         text_surface = font.render(f"name: {vehicle.name}, vel: {vehicle.velocity:.2f}m/s, accel: {vehicle.acceleration:.2f}m/s^2", True, (0, 0, 0))
         screen.blit(text_surface, (5,i*20 + 5))
 
 def render_time(screen: Surface, time_elapsed) -> None: 
     """Render function for time indicator."""
-    font = pygame.font.SysFont('Segoe UI', 15)
-    text_surface = font.render(f"Time: {time_elapsed:.3f}", True, (255, 255, 255))
+    font = pygame.font.Font('assets/fonts/DMSans-Medium.ttf', 15)
+    text_surface = font.render(f"Time: {time_elapsed:.2f}s", True, (255, 255, 255))
     text_rect = text_surface.get_rect()
     text_rect.right = 150
-    screen.blit(text_surface, text_surface.get_rect(topright = (screen.get_width()-3, screen.get_height()-TOOLBAR_HEIGHT)))
+    screen.blit(text_surface, text_surface.get_rect(topright = (screen.get_width()-7, screen.get_height()-TOOLBAR_HEIGHT+7)))
 
 def render_buttons(screen: Surface, buttons: list[Button]) -> None:
     """Render function for Buttons."""
@@ -141,14 +141,7 @@ def render_buttons(screen: Surface, buttons: list[Button]) -> None:
             text = font.render(b.text, 1, (255, 255, 255))
             screen.blit(text, (b.x + (b.width/2 - text.get_width()/2), b.y + (b.height/2 - text.get_height()/2)))
 
-def render_toolbar(screen, time_elapsed, buttons):
-    toolbar_rect = pygame.Rect(0, screen.get_height()-TOOLBAR_HEIGHT,screen.get_width(),TOOLBAR_HEIGHT)
-    pygame.draw.rect(screen, pygame.Color(80,80,80), toolbar_rect)
-    render_time(screen, time_elapsed)
-    render_buttons(screen, buttons)
-
 def render_arrows(screen: Surface, edges: list[Edge]):
-    
     """Render function for arrows."""
             
     for edge in edges:
@@ -207,12 +200,15 @@ def render_arrows(screen: Surface, edges: list[Edge]):
 def render_toolbar(screen: Surface, time_elapsed, buttons: list[Button]) -> None:
     """Render function for toolbar."""
     toolbar_rect = pygame.Rect(0, screen.get_height()-TOOLBAR_HEIGHT,screen.get_width(),TOOLBAR_HEIGHT)
-    pygame.draw.rect(screen, pygame.Color(80,80,80), toolbar_rect)
+    pygame.draw.rect(screen, pygame.Color(80,90,100), toolbar_rect)
     render_time(screen, time_elapsed)
     render_buttons(screen, buttons)
 
 def render_title(screen) -> None: 
     """Render function for title."""
-    FONT = pygame.font.SysFont("Segoe UI", 15, bold=True, italic=False)
-    text_surface = FONT.render(f"Concurent Traffic v0.0.2", True, (255, 255, 255))
-    screen.blit(text_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+6))
+    FONT = pygame.font.Font("assets/fonts/DMSans-BlackItalic.ttf", 24)
+    title_surface = FONT.render(f"Concurrent Traffic", True, (255, 255, 255))
+    screen.blit(title_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+3))
+    FONT = pygame.font.Font("assets/fonts/DMSans-Black.ttf", 16)
+    version_surface = FONT.render(f"- v0.0.2", True, (255, 255, 255))
+    screen.blit(version_surface, (235,screen.get_height()-TOOLBAR_HEIGHT+11))

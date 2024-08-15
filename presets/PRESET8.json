@@ -11,8 +11,9 @@
     {"id": "vehicle_9", "name": "Ferrari", "route": "route_4", "route_position": 15, "velocity": 20},
     {"id": "vehicle_10", "name": "Tesla Model 3", "route": "route_7", "route_position": 5, "velocity": 20},
     {"id": "vehicle_11", "name": "Elantra", "route": "route_10", "route_position": 0, "velocity": 20},
-    {"id": "vehicle_12", "name": "Porsche 911", "route": "route_1", "route_position": 7.5, "velocity": 20},
-    {"id": "vehicle_13", "name": "Reventon", "route": "route_4", "route_position": 0, "velocity": 20}
+    {"id": "vehicle_12", "name": "Porsche 911", "route": "route_0", "route_position": 7.5, "velocity": 20},
+    {"id": "vehicle_13", "name": "Camaro", "route": "route_1", "route_position": 0, "velocity": 20},
+    {"id": "vehicle_14", "name": "Reventon", "route": "route_4", "route_position": 0, "velocity": 20}
   ],
 
   "nodes": [

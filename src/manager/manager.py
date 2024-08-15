@@ -117,9 +117,9 @@ def get_collisions_between_two_vehicles(vehicle0: Vehicle, vehicle1: Vehicle, cu
     if result.success:
         time_of_collision = result.x + cur_time
         if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
-            print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
-            print(f"{vehicle0.name}: {route_position_to_world_position(vehicle0.route, route_position_at_delta_time(vehicle0, result.x, cur_time))}")
-            print(f"{vehicle1.name}: {route_position_to_world_position(vehicle1.route, route_position_at_delta_time(vehicle1, result.x, cur_time))}")
+            # print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
+            # print(f"{vehicle0.name}: {route_position_to_world_position(vehicle0.route, route_position_at_delta_time(vehicle0, result.x, cur_time))}")
+            # print(f"{vehicle1.name}: {route_position_to_world_position(vehicle1.route, route_position_at_delta_time(vehicle1, result.x, cur_time))}")
             delta0 = vehicle0.route.total_length - route_position_at_delta_time(vehicle0, time_of_collision - cur_time, cur_time)
             delta1 = vehicle1.route.total_length - route_position_at_delta_time(vehicle1, time_of_collision - cur_time, cur_time)
             return Collision(vehicle0, vehicle1, time_of_collision)
@@ -232,12 +232,12 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
 
             deceled_velocity = cur_vehicle.velocity + decel * deceling_duration
             accel_duration = (DESIRED_CRUISING_SPEED - deceled_velocity) / MAX_ACCELERATION
-            print(f"vs: {undeterred_collision.vehicle0.name} and {undeterred_collision.vehicle1.name}")
-            print(f"accel_duration: {accel_duration}")
-            print(f"deceling_duration: {deceling_duration}")
-            print(f"deceled_velocity: {deceled_velocity}")
-            print(f"deceled_duration: {deceled_duration}")
-            print(f"time of collision: {undeterred_collision.time}")
+            # print(f"vs: {undeterred_collision.vehicle0.name} and {undeterred_collision.vehicle1.name}")
+            # print(f"accel_duration: {accel_duration}")
+            # print(f"deceling_duration: {deceling_duration}")
+            # print(f"deceled_velocity: {deceled_velocity}")
+            # print(f"deceled_duration: {deceled_duration}")
+            # print(f"time of collision: {undeterred_collision.time}")
 
             # compose the command
             t = [elapsed_time,

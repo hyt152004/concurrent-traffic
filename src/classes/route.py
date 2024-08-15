@@ -1,6 +1,7 @@
 import numpy as np
 from .edge import Edge, StraightEdge, CircularEdge, get_length
 from standard_traffic.traffic_light import TrafficLight
+from typing import Optional
 
 class Route():
     """A Route consists of Edges linked together."""
@@ -20,7 +21,7 @@ class Route():
             self.pos_to_edge_map[(self.total_length, self.total_length + curr_length)] = e
             self.total_length += curr_length
 
-def route_position_to_world_position(route: Route, position: float) -> np.array:
+def route_position_to_world_position(route: Route, position: float) -> Optional[np.array]:
     """Return world coordinates given a route and position along that route."""
     edge_of_position = None
     percentage_on_edge = None
@@ -30,7 +31,7 @@ def route_position_to_world_position(route: Route, position: float) -> np.array:
             percentage_on_edge = (position - r[0]) / (r[1] - r[0])
             break
     if edge_of_position is None:
-        return np.array([-100, -100])
+        return None
     if isinstance(edge_of_position, StraightEdge):
         world_x = (1-percentage_on_edge)*edge_of_position.start.position[0] + percentage_on_edge*edge_of_position.end.position[0]
         world_y = (1-percentage_on_edge)*edge_of_position.start.position[1] + percentage_on_edge*edge_of_position.end.position[1]

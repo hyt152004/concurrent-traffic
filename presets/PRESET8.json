@@ -1,8 +1,18 @@
 {
   "stored_vehicles": [
-    {"id": "vehicle_0", "name": "Corolla", "route": "route_0", "route_position": 30, "velocity": 8},
-    {"id": "vehicle_1", "name": "Camry", "route": "route_0", "route_position": 20, "velocity": 8},
-    {"id": "vehicle_4", "name": "Q3", "route": "route_8", "route_position": 18, "velocity": 8}
+    {"id": "vehicle_0", "name": "Corolla", "route": "route_0", "route_position": 30, "velocity": 20},
+    {"id": "vehicle_1", "name": "Camry", "route": "route_0", "route_position": 15, "velocity": 20},
+    {"id": "vehicle_2", "name": "Civic", "route": "route_10", "route_position": 30, "velocity": 20},
+    {"id": "vehicle_3", "name": "RAV4", "route": "route_5", "route_position": 40, "velocity": 20},
+    {"id": "vehicle_4", "name": "Q3", "route": "route_8", "route_position": 18, "velocity": 20},
+    {"id": "vehicle_6", "name": "Accord", "route": "route_9", "route_position": 15, "velocity": 20},
+    {"id": "vehicle_7", "name": "Highlander", "route": "route_6", "route_position": 27, "velocity": 20},
+    {"id": "vehicle_8", "name": "Bugatti", "route": "route_3", "route_position": 8, "velocity": 20},
+    {"id": "vehicle_9", "name": "Ferrari", "route": "route_4", "route_position": 15, "velocity": 20},
+    {"id": "vehicle_10", "name": "Tesla Model 3", "route": "route_7", "route_position": 5, "velocity": 20},
+    {"id": "vehicle_11", "name": "Elantra", "route": "route_10", "route_position": 0, "velocity": 20},
+    {"id": "vehicle_12", "name": "Porsche 911", "route": "route_1", "route_position": 7.5, "velocity": 20},
+    {"id": "vehicle_13", "name": "Reventon", "route": "route_4", "route_position": 0, "velocity": 20}
   ],
 
   "nodes": [

@@ -7,20 +7,18 @@ from random import randint
 
 CAR_COLLISION_DISTANCE = 3 # meters
 MINIMUM_CRUISING_SPEED = 0
+DESIRED_CRUISING_SPEED = 20
+MAX_ACCELERATION = 3.5
 
 class Collision:
     """A Collision represents a collision between two Vehicles at a given time."""
     vehicle0: Vehicle
     vehicle1: Vehicle
-    delta0: float
-    delta1: float
     time: float
 
-    def __init__(self, vehicle0: Vehicle, vehicle1: Vehicle, delta0: float, delta1: float, time: float) -> None:
+    def __init__(self, vehicle0: Vehicle, vehicle1: Vehicle, time: float) -> None:
         self.vehicle0 = vehicle0
         self.vehicle1 = vehicle1
-        self.delta0 = delta0
-        self.delta1 = delta1
         self.time = time
 
 class Manager:
@@ -46,16 +44,19 @@ def reset(manager: Manager) -> None:
 
 def manager_event_loop(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> None:
     """Event loop for Manager. Updates manager.vehicles if a Vehicle enters its radius. Also recalculates and sends Commands on update of manager.vehicles."""
-    if _update_manager_vehicle_list(manager, vehicles):
+    if _update_manager_vehicle_list(manager, vehicles, cur_time):
         _compute_and_send_acceleration_commands(manager, cur_time)
 
-def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle]) -> bool:
+def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle], elapsed_time: float) -> bool:
     """Return True if new vehicles have been added to manager.vehicles."""
     new_vehicle = False
     for vehicle in vehicles:
 
         # vehicle within manager radius? 
-        distance_to_vehicle = np.linalg.norm(route_position_to_world_position(vehicle.route, vehicle.route_position)-manager.position)
+        route_position_of_vehicle = route_position_to_world_position(vehicle.route, vehicle.route_position)
+        if route_position_of_vehicle is None: # this vehicle is out of its route and returns no position
+            continue
+        distance_to_vehicle = np.linalg.norm(route_position_of_vehicle-manager.position)
 
         # vehicle already in list and within manager radius?
         vehicle_in_list = any(manager_vehicle.id == vehicle.id for manager_vehicle in manager.vehicles)
@@ -63,6 +64,14 @@ def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle]) -> b
         # append if not in list and inside radius
         if not vehicle_in_list and distance_to_vehicle <= manager.radius:
             manager.vehicles.append(vehicle)
+
+            # set command to get vehicle to desired cruising speed
+            accel_duration = (DESIRED_CRUISING_SPEED - vehicle.velocity) / MAX_ACCELERATION
+            t = [elapsed_time, elapsed_time + accel_duration]
+            a = [MAX_ACCELERATION, 0]
+            
+            vehicle.command = update_cmd(vehicle.command, t, a, elapsed_time)
+
             new_vehicle = True
 
         # remove if in list and outside radius
@@ -77,10 +86,12 @@ def get_collisions(manager: Manager, cur_time: float) -> list[Collision]:
     vehicle_pairs = combinations(manager.vehicles, 2)
     
     for vehicle_pair in vehicle_pairs:
-        vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle_pair[0]), time_until_end_of_route(vehicle_pair[1])))
+        vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle_pair[0], cur_time), time_until_end_of_route(vehicle_pair[1], cur_time)))
         def distance_objective(t):
             wp0 = route_position_to_world_position(vehicle_pair[0].route, route_position_at_delta_time(vehicle_pair[0], t, cur_time))
             wp1 = route_position_to_world_position(vehicle_pair[1].route, route_position_at_delta_time(vehicle_pair[1], t, cur_time))
+            if wp0 is None or wp1 is None:
+                return np.inf
             return np.linalg.norm(wp1-wp0)
         
         result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
@@ -90,28 +101,28 @@ def get_collisions(manager: Manager, cur_time: float) -> list[Collision]:
                 # print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
                 # print(f"{vehicle_pair[0].name}: {route_position_to_world_position(vehicle_pair[0].route, route_position_at_delta_time(vehicle_pair[0], result.x, cur_time))}")
                 # print(f"{vehicle_pair[1].name}: {route_position_to_world_position(vehicle_pair[1].route, route_position_at_delta_time(vehicle_pair[1], result.x, cur_time))}")
-                delta0 = vehicle_pair[0].route.total_length - route_position_at_delta_time(vehicle_pair[0], time_of_collision - cur_time, cur_time)
-                delta1 = vehicle_pair[1].route.total_length - route_position_at_delta_time(vehicle_pair[1], time_of_collision - cur_time, cur_time)
-                collisions.append(Collision(vehicle_pair[0], vehicle_pair[1], delta0, delta1, time_of_collision))
+                collisions.append(Collision(vehicle_pair[0], vehicle_pair[1], time_of_collision))
     return collisions
 
 def get_collisions_between_two_vehicles(vehicle0: Vehicle, vehicle1: Vehicle, cur_time: float) -> Collision | None:
-    vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle0), time_until_end_of_route(vehicle1)))
+    vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle0, cur_time), time_until_end_of_route(vehicle1, cur_time)))
     def distance_objective(t):
             wp0 = route_position_to_world_position(vehicle0.route, route_position_at_delta_time(vehicle0, t, cur_time))
             wp1 = route_position_to_world_position(vehicle1.route, route_position_at_delta_time(vehicle1, t, cur_time))
+            if wp0 is None or wp1 is None:
+                return np.inf
             return np.linalg.norm(wp1-wp0)
         
     result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
     if result.success:
         time_of_collision = result.x + cur_time
         if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
-            # print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
-            # print(f"{vehicle0.name}: {route_position_to_world_position(vehicle0.route, route_position_at_delta_time(vehicle0, result.x, cur_time))}")
-            # print(f"{vehicle1.name}: {route_position_to_world_position(vehicle1.route, route_position_at_delta_time(vehicle1, result.x, cur_time))}")
+            print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
+            print(f"{vehicle0.name}: {route_position_to_world_position(vehicle0.route, route_position_at_delta_time(vehicle0, result.x, cur_time))}")
+            print(f"{vehicle1.name}: {route_position_to_world_position(vehicle1.route, route_position_at_delta_time(vehicle1, result.x, cur_time))}")
             delta0 = vehicle0.route.total_length - route_position_at_delta_time(vehicle0, time_of_collision - cur_time, cur_time)
             delta1 = vehicle1.route.total_length - route_position_at_delta_time(vehicle1, time_of_collision - cur_time, cur_time)
-            return Collision(vehicle0, vehicle1, delta0, delta1, time_of_collision)
+            return Collision(vehicle0, vehicle1, time_of_collision)
     return None
     
 def route_position_at_delta_time(vehicle: Vehicle, delta_time: float, cur_time: float) -> float:
@@ -145,16 +156,28 @@ def route_position_at_delta_time(vehicle: Vehicle, delta_time: float, cur_time: 
 
     return vehicle.route_position + delta_distance
 
-def time_until_end_of_route(vehicle: Vehicle) -> float:
+def time_until_end_of_route(vehicle: Vehicle, cur_time: float) -> float:
     """Return time til vehicle reaches the end of its route."""
-    return (vehicle.route.total_length - vehicle.route_position) / vehicle.velocity
+    # cur_v = vehicle.velocity
+
+    # end_of_route = vehicle.route.total_length
+    # cur_pos = vehicle.route_position
+    # t = cur_time
+
+    # i = np.where(vehicle.command.accel_func.y == vehicle.command(cur_time))[0][0]
+
+    # while cur_pos < end_of_route and i < len(vehicle.command.accel_func.x) - 1:
+    #     duration = vehicle.command.accel_func.x[i + 1] - vehicle.command.accel_func.x[i]
+    #     cur_v += duration * vehicle.command.accel_func.y[i]
+    #     cur_pos += (cur_v * duration) + (0.5 * vehicle.command.accel_func.y[i] * (duration ** 2))
+    #     t += duration
+    # print(t)
+    return 10
 
 # def command_to_set_velocity(vehicle: Vehicle, duration: float, velocity: float):
 #     acceleration_to_set = (velocity - vehicle.velocity) / duration
 #     t = [0, elapsed_time+0.5, elapsed_time+3, elapsed_time+3.5]
 #     a = [propsed_decceleration,0,-propsed_decceleration,0]
-
-MAX_DECCELERATION = -3.5
 
 def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: float) -> None:
     """Compute and send commands."""
@@ -168,7 +191,7 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
 
     while collisions != []:
         # initial durations
-        decel = MAX_DECCELERATION
+        decel = -MAX_ACCELERATION
         deceling_duration = 0
         deceled_duration = 0
 
@@ -180,17 +203,22 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
         vehicle1_index = manager.vehicles.index(undeterred_collision.vehicle1)
         cur_vehicle = undeterred_collision.vehicle0 if vehicle0_index > vehicle1_index else undeterred_collision.vehicle1
 
+        print(f"collision between {undeterred_collision.vehicle0.name} and {undeterred_collision.vehicle1.name}")
+
         while undeterred_collision is not None:
             # first and foremost if we've tried 1000 times to resolve this collision, just give up
-            if attempts_to_deter_collision >= 100:
-                raise RuntimeError("failed to deter collision in 1000 attempts :(")
+            # print(f"attempts to deter collision : {attempts_to_deter_collision}")
+            if attempts_to_deter_collision >= 100000:
+                raise RuntimeError("failed to deter collision in 100000 attempts :(")
 
             # if lower_priority_vehicle already had a command sent to it?
             if cur_vehicle in updated_vehicles:
+                # print('vehicle has been updated already, modifying cmd')
                 index = np.where(cur_vehicle.command.accel_func.x == elapsed_time)[0][0]
                 cur_vehicle.command(elapsed_time)
                 deceling_duration = cur_vehicle.command.accel_func.x[index + 1] - cur_vehicle.command.accel_func.x[index]
                 deceled_duration = cur_vehicle.command.accel_func.x[index + 2] - cur_vehicle.command.accel_func.x[index + 1]
+                # print('end of retrieving durations')
             
             # max decelerating duration is when vehicle will come to a complete stop
             max_deceling_duration = (MINIMUM_CRUISING_SPEED-cur_vehicle.velocity)/decel-0.05
@@ -202,14 +230,23 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
             else:
                 deceled_duration += 0.1
 
+            deceled_velocity = cur_vehicle.velocity + decel * deceling_duration
+            accel_duration = (DESIRED_CRUISING_SPEED - deceled_velocity) / MAX_ACCELERATION
+            print(f"vs: {undeterred_collision.vehicle0.name} and {undeterred_collision.vehicle1.name}")
+            print(f"accel_duration: {accel_duration}")
+            print(f"deceling_duration: {deceling_duration}")
+            print(f"deceled_velocity: {deceled_velocity}")
+            print(f"deceled_duration: {deceled_duration}")
+            print(f"time of collision: {undeterred_collision.time}")
+
             # compose the command
             t = [elapsed_time,
                 elapsed_time + deceling_duration,
                 elapsed_time + deceling_duration + deceled_duration,
-                elapsed_time + deceling_duration + deceled_duration + deceling_duration]
-            a = [decel,
+                elapsed_time + deceling_duration + deceled_duration + accel_duration]
+            a = [-MAX_ACCELERATION,
                 0,
-                -decel,
+                MAX_ACCELERATION,
                 0]
             cur_vehicle.command = update_cmd(cur_vehicle.command, t, a, elapsed_time)
             updated_vehicles.add(cur_vehicle)
@@ -217,6 +254,7 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
             attempts_to_deter_collision += 1
             undeterred_collision = get_collisions_between_two_vehicles(collisions[0].vehicle0, collisions[0].vehicle1, elapsed_time)
 
+        collisions = get_collisions(manager, elapsed_time)
             
 
     # manager.vehicles.sort(key=lambda v: v.route_position, reverse=True)

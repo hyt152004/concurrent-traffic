@@ -66,6 +66,8 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
         vehicle_screen_length = world_to_screen_scalar(screen, vehicle.length, zoom_factor)
         
         vehicle_center_point = route_position_to_world_position(vehicle.route, vehicle.route_position)
+        if vehicle_center_point is None: # this vehicle is out of its route and returns no position
+            continue
         vehicle_center_screen_pos = world_to_screen_vector(screen, vehicle_center_point, zoom_factor)
         img = pygame.transform.smoothscale(vehicle.image, (vehicle_screen_length, vehicle_screen_width))
         vehicle_angle = direction_at_route_position(vehicle.route, vehicle.route_position)
@@ -118,7 +120,7 @@ def render_manager(screen: Surface, manager: Manager) -> None:
     
     for i, vehicle in enumerate(manager.vehicles):
         font = pygame.font.SysFont('Segoe UI', 15)
-        text_surface = font.render(f"name: {vehicle.name}, pos: {vehicle.route_position:.2f}, accel: {vehicle.acceleration:.2f}, stamps: {vehicle.command.accel_func.x}", True, (0, 0, 0))
+        text_surface = font.render(f"name: {vehicle.name}, vel: {vehicle.velocity:.2f}m/s, accel: {vehicle.acceleration:.2f}m/s^2", True, (0, 0, 0))
         screen.blit(text_surface, (5,i*20 + 5))
 
 def render_time(screen: Surface, time_elapsed) -> None: 

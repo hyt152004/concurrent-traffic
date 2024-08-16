@@ -123,7 +123,7 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
             new_a = np.array([required_deceleration, leading_vehicle.acceleration])
             
             vehicle.command = update_cmd(vehicle.command, new_t, new_a, cur_time)
-        
+    
         elif abs(vehicle.velocity - vehicle.default_velocity) > 0.01:
             acceleration_distance = 10
             required_deceleration = (vehicle.default_velocity**2 - initial_velocity**2) / (2 * acceleration_distance)

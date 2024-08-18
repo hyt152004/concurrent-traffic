@@ -248,6 +248,7 @@ def _compute_command(elapsed_time: float) -> tuple[np.array, np.array]:
     return np.array(t), np.array(a)
 
 def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> list[Collision]:
+    """Detects when a collision has actually occured."""
     collision = False
     vehicle_pairs = combinations(manager.vehicles, 2)
     car_info = []

@@ -5,7 +5,7 @@ from classes.vehicle import Vehicle
 from classes.node import Node
 from classes.edge import Edge, StraightEdge, CircularEdge
 from classes.route import route_position_to_world_position, direction_at_route_position
-from manager.manager import Manager, CAR_COLLISION_DISTANCE, detect_collisions
+from manager.manager import Manager, CAR_COLLISION_DISTANCE
 from classes.button import Button
 from .helper import world_to_screen_vector, world_to_screen_scalar, create_rotation_matrix, rotate_vector
 from .simulator import WORLD_WIDTH, WORLD_HEIGHT, TOOLBAR_HEIGHT
@@ -234,7 +234,3 @@ def render_title(screen) -> None:
     FONT = pygame.font.SysFont("Segoe UI", 15, bold=True, italic=False)
     text_surface = FONT.render(f"Concurent Traffic v0.0.2", True, (255, 255, 255))
     screen.blit(text_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+6))
-
-
-
-

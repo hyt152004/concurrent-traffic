@@ -55,7 +55,6 @@ def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle]) -> b
     """Return True if new vehicles have been added to manager.vehicles."""
     new_vehicle = False
     for vehicle in vehicles:
-
         # vehicle within manager radius? 
         distance_to_vehicle = np.linalg.norm(route_position_to_world_position(vehicle.route, vehicle.route_position)-manager.position)
 
@@ -247,3 +246,28 @@ def _compute_command(elapsed_time: float) -> tuple[np.array, np.array]:
     t = [elapsed_time, elapsed_time + randint(1, 3), elapsed_time + randint(3, 5)]
     a = [randint(1, 3), randint(-3, 3), 3]
     return np.array(t), np.array(a)
+
+def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> list[Collision]:
+    """Detects when a collision has actually occurred."""
+    collision = False
+    vehicle_pairs = combinations(manager.vehicles, 2)
+    car_info = []
+
+    for vehicle_pair in vehicle_pairs:
+        # find two cars world position and calculate the distance between two cars
+        wp0 = route_position_to_world_position(vehicle_pair[0].route, vehicle_pair[0].route_position)
+        wp1 = route_position_to_world_position(vehicle_pair[1].route, vehicle_pair[1].route_position)
+        distance = np.linalg.norm(wp1 - wp0)
+        
+        if distance <= CAR_COLLISION_DISTANCE:
+            collision = True # just for screen pausing
+            car_info = [vehicle_pair[0].name, vehicle_pair[1].name, cur_time]
+
+            # changes the boolean to true (see vehicle.py -> vehicle.collided)
+            vehicle_pair[0].collided = True
+            vehicle_pair[1].collided = True
+
+            print(f"Collision detected between {car_info[0]} and {car_info[1]} at time: {car_info[2]}")
+            print(f"distance: {distance}")
+
+    return collision

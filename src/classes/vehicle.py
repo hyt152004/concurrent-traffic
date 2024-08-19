@@ -18,9 +18,10 @@ class Vehicle:
     width: float              = 2.23            # float representing width of car in meters. orthogonal to direction
     length: float             = 4.90            # float representing length of car in meters. parallel to direction
     pivot_distance: float     = 1.25            # float representing distance from pivot to center.
+    collided: bool            = False           # if true, will render car red.
     image: Surface
 
-    command: Command          = Command([0], [0])             # Command
+    command: Command          = Command(np.array([0]), np.array([0]))             # Command
 
     def __init__(self,
                  name: str,
@@ -69,7 +70,6 @@ def update_cmd(old_cmd: Command, t: np.array, a: np.array, elapsed_time: float=0
     del_index = None
     for i in range(len(old_cmd.accel_func.x)):
         if old_cmd.accel_func.x[i] >= elapsed_time:
-            print(i, len(old_cmd.accel_func.x))
             del_index = i
             break
 
@@ -87,12 +87,12 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
     # 1. stop before any traffic stop line if that traffic light is red
     #    traffic light red? stop before it
     #    traffic light green? speed up
-    # 2. maintain distance between car in front
+    # 2. maintain distance between car with closest collision (the car in front)
     #    if conditions match to calculate new command
-    #    a. is our distance to next car within X?
+    #    a. is our distance to that car within X?
     #       is their acceleration lower than ours?
     #       -> calculate slow down
-    #    b. is our distance to next car more than Y?
+    #    b. is our distance to that car more than Y?
     #       is their acceleration more than ours?
     #       -> calculate speed up
 

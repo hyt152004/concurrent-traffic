@@ -17,13 +17,13 @@ import pygame
 
 from classes.vehicle import Vehicle, vehicle_event_loop, vehicle_copy, driver_traffic_update_command
 from classes.button import Button
-from manager.manager import Manager, manager_event_loop, reset
+from manager.manager import Manager, manager_event_loop, reset, detect_collisions
 from classes.node import Node
 from classes.edge import Edge
-from classes.route import Route
+from classes.route import Route, route_position_to_world_position
 from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render
 from .update import update_world
-from .helper import scroll_handler
+from .helper import scroll_handler, world_to_screen_scalar, world_to_screen_vector
 
 def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager) -> None:
     """Initializes and runs the pygame simulator. Requires initialization of lanes, manager, vehicles."""
@@ -109,13 +109,14 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     algorithm_selector_standard_traffic = Button((255, 50, 50), (255, 50, 50), (700, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'Standard Traffic', lambda: toggle_algorithm_selector(algorithm_selector_standard_traffic),())
 
     buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed, algorithm_selector_v0, algorithm_selector_standard_traffic]
+
     while running:
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
+        
             if event.type == pygame.MOUSEBUTTONDOWN:
                 [b.click() for b in buttons]
 
@@ -152,7 +153,11 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             # physical changes to world (updating positions, velocity, etc.)
             update_world(delta_time * playback_speed_factor, vehicles)
             time_elapsed += delta_time * playback_speed_factor
-            
+
+        # checks if collision has occured
+        if detect_collisions(manager, vehicles, time_elapsed) == True:
+            is_run = False
+
         # updates the screen
         pygame.display.update()
         delta_time = clock.tick(60) / 1000

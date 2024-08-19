@@ -37,3 +37,15 @@ def scroll_handler(event: pygame.event.Event, zoom_factor_simulator: float):
             zoom_factor_simulator = MIN_ZOOM_FACTOR
 
     return zoom_factor_simulator
+
+def create_rotation_matrix(degrees):
+    # function creates and returns rotation matrix    
+    theta = np.radians(degrees)
+    cos, sin = np.cos(theta), np.sin(theta)
+    rotation_matrix = np.array(((cos, -sin), (sin, cos)))
+    return rotation_matrix
+    
+def rotate_vector(size, matrix, edge_unit_vector, midpoint_position):
+    # returns the dot product of unit vector and its rotation matrix
+    vector = size * np.dot(edge_unit_vector, matrix) + midpoint_position
+    return vector

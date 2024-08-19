@@ -1,0 +1,36 @@
+{
+  "stored_vehicles": [
+    {"id": "vehicle_0", "name": "no_acc", "route": "route_0", "route_position": 0, "velocity": 10},
+    {"id": "vehicle_1", "name": "acc", "route": "route_1", "route_position": 30, "velocity": 3}
+  ],
+
+  "nodes": [
+    {"id": "node_0", "position": [ -80,  1.5]},
+    {"id": "node_1", "position": [  -6,  1.5]},
+    {"id": "node_2", "position": [   6,  1.5]},
+    {"id": "node_3", "position": [  80,  1.5]},
+    {"id": "node_4", "position": [-1.5,  -80]},
+    {"id": "node_5", "position": [-1.5,   -6]},
+    {"id": "node_6", "position": [-1.5,    6]},
+    {"id": "node_7", "position": [-1.5,   80]}
+  ],
+
+  "edges": [
+    {"id": "edge_0", "source": "node_0", "target": "node_1"},
+    {"id": "edge_1", "source": "node_1", "target": "node_2"},
+    {"id": "edge_2", "source": "node_2", "target": "node_3"},
+    {"id": "edge_3", "source": "node_4", "target": "node_5"},
+    {"id": "edge_4", "source": "node_5", "target": "node_6"},
+    {"id": "edge_5", "source": "node_6", "target": "node_7"}
+  ],
+
+  "routes": [
+    {"id": "route_0", "source": "edge_0", "intermediate": ["edge_1"], "target": "edge_2"},
+    {"id": "route_1", "source": "edge_3", "intermediate": ["edge_4"], "target": "edge_5"}
+  ],
+
+  "manager": {
+    "position": [0, 0],
+    "radius": 50
+  }
+}

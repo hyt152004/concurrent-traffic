@@ -39,6 +39,7 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     vehicles = vehicle_copy(initial_vehicles)
     is_run = True
     route_visible = True
+    selected_algorithm_button = None
 
     def toggle_update() -> None:
         """Toggles between resuming or pausing the simulator."""
@@ -81,6 +82,19 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         elif operation == "-":
             playback_speed_factor = max(MIN_PLAYBACK_SPEED_FACTOR, playback_speed_factor - 0.25)
         display_playback_speed.text = str(playback_speed_factor) + "x"
+        
+    def toggle_algorithm_selector(updated_algorithm: Button) -> None:
+        nonlocal selected_algorithm_button
+        if selected_algorithm_button != None:
+            selected_algorithm_button.set_colour((40, 40, 40))
+        else:
+            # algorithm_selector_standard_traffic is None only at the beginning.
+            # Since algorithm_selector_standard_traffic starts with red colour, 
+            # we need to manaually change its colour only for the start
+            algorithm_selector_standard_traffic.set_colour((40, 40, 40))
+        selected_algorithm_button = updated_algorithm
+        selected_algorithm_button.set_colour((255, 50, 50))
+        restart_func()
     
     toggle_button = Button((40, 40, 40), (255, 50, 50), (5, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'toggle update', toggle_update, ())
     restart_button = Button((40, 40, 40), (255, 50, 50), (110, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'restart', restart_func, ())
@@ -90,8 +104,11 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     subtract_playback_speed = Button((40, 40, 40), (255, 50, 50), (445, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '-', lambda: toggle_playback_speed("-"), ())
     display_playback_speed = Button((40, 40, 40), (40, 40, 40), (480, screen.get_height()-TOOLBAR_HEIGHT+50), (45, 30), str(playback_speed_factor) + "x", None, ())
     add_playback_speed = Button((40, 40, 40), (255, 50, 50), (525, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '+', lambda: toggle_playback_speed("+"), ())
+    
+    algorithm_selector_v0 = Button((40, 40, 40), (255, 50, 50), (565, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'ALG 0', lambda: toggle_algorithm_selector(algorithm_selector_v0),())
+    algorithm_selector_standard_traffic = Button((255, 50, 50), (255, 50, 50), (700, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'Standard Traffic', lambda: toggle_algorithm_selector(algorithm_selector_standard_traffic),())
 
-    buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed]
+    buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed, algorithm_selector_v0, algorithm_selector_standard_traffic]
 
     while running:
         # poll for events
@@ -112,22 +129,20 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
 
         # optionally render nodes and edges. for now always on
         render_world(screen, nodes, edges, route_visible, intersection_points)
-        render_manager(screen, manager)
         render_vehicles(screen, vehicles)
         render_toolbar(screen, time_elapsed, buttons)
         render_title(screen)
 
-        # manager 'cpu'
-        manager_event_loop(manager, vehicles, time_elapsed)
+        # manager 'cpu' or standard traffic 
+        if selected_algorithm_button == algorithm_selector_v0:
+            render_manager(screen, manager)
+            manager_event_loop(manager, vehicles, time_elapsed)
+        else:
+            driver_traffic_update_command(vehicles, time_elapsed)
 
         # vehicles 'cpu'
         for vehicle in vehicles:
             vehicle_event_loop(vehicle, time_elapsed)
-
-        # standard_traffic = True
-        # if standard_traffic:
-        #     for vehicle in vehicles:
-        #         driver_traffic_update_command(vehicle)
 
         # vehicle removal 
         for vehicle in vehicles:

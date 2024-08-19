@@ -80,7 +80,7 @@ def update_cmd(old_cmd: Command, t: np.array, a: np.array, elapsed_time: float=0
 
 ### FUNCTIONS FOR STANDARD TRAFFIC
 
-def driver_traffic_update_command(vehicle: Vehicle) -> None:
+def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
     """Update command for standard traffic."""
     cmd = None
     # calculate command that achieves two things
@@ -99,4 +99,3 @@ def driver_traffic_update_command(vehicle: Vehicle) -> None:
     # 1 and 2 need to work together. If 2. determines that we can speed up,
     # but the car is approaching a red traffic light,
     # then the final command should be to slow down
-    vehicle.command = cmd

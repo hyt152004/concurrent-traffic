@@ -32,3 +32,6 @@ class Button:
         """Runs self.on_click function if such a function exists and the button is selected"""
         if self.is_selected() and self.on_click:
             self.on_click(*self.cargs)
+            
+    def set_colour(self, color: tuple[int, int, int]) -> None:
+        self.color = color

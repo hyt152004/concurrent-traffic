@@ -1,6 +1,6 @@
 {
   "stored_vehicles": [
-    {"id": "vehicle_0", "name": "Toyota", "route": "route_0", "route_position": 10, "velocity": 18},
+    {"id": "vehicle_0", "name": "Toyota", "route": "route_0", "route_position": 21, "velocity": 18},
     {"id": "vehicle_2", "name": "Ford", "route": "route_2", "route_position": 30, "velocity": 8}
   ],
 

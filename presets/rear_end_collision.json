@@ -1,10 +1,7 @@
 {
   "stored_vehicles": [
-    {"id": "vehicle_0", "name": "Toyota", "route": "route_0", "route_position": 10, "velocity": 18},
-    {"id": "vehicle_1", "name": "Honda", "route": "route_0", "route_position": 40, "velocity": 14}, 
-    {"id": "vehicle_2", "name": "Ford", "route": "route_0", "route_position": 80, "velocity": 10},
-    {"id": "vehicle_3", "name": "Chevrolet", "route": "route_0", "route_position": 145, "velocity": 6},
-    {"id": "vehicle_4", "name": "Nissan", "route": "route_0", "route_position": 150, "velocity": 0}
+    {"id": "vehicle_0", "name": "Toyota", "route": "route_0", "route_position": 31, "velocity": 18},
+    {"id": "vehicle_1", "name": "Honda", "route": "route_0", "route_position": 40, "velocity": 5}
   ],
 
   "nodes": [

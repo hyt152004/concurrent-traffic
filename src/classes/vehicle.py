@@ -117,7 +117,10 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
             # ALL VEHICLES MUST BE PLACED 10m AWAY FROM EACH OTHER AT THE START
             safety_distance = 9
             distance = distance_to_leading - safety_distance
-            if distance < 0:
+            # this prevents division of negative and 0
+            if distance <= 0:
+                vehicle.velocity = 0
+                print("Invalid Implement Command Regarding Safety Distance")
                 continue
             required_deceleration = (final_velocity**2 - initial_velocity**2) / (2 * distance)
             
@@ -131,7 +134,7 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
             required_deceleration = (vehicle.default_velocity**2 - initial_velocity**2) / (2 * acceleration_distance)
             
             new_t = np.array([cur_time, cur_time + 0.1])
-            new_a = np.array([required_deceleration, vehicle.acceleration])
+            new_a = np.array([required_deceleration, vehicle.acceleration])   
             
             vehicle.command = update_cmd(vehicle.command, new_t, new_a, cur_time)
             

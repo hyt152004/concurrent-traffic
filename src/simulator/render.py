@@ -59,7 +59,7 @@ def render_intersections(screen: Surface, intersection_points) -> None:
     """Render function for intersecting Routes."""
     for intersection in intersection_points:
         node_position = world_to_screen_vector(screen, np.array(list(intersection[2])), zoom_factor)
-        pygame.draw.circle(screen, "blue", node_position, 3)
+        # pygame.draw.circle(screen, "blue", node_position, 3)
 
 def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
     """Render function for Vehicles."""
@@ -107,11 +107,10 @@ def render_world(screen: Surface, nodes: list[Node], edges: list[Edge], route_vi
 
 def render_traffic_lights(screen: Surface, traffic_master: TrafficMaster) -> None:
     """Render function for TrafficMaster that controls all the TrafficLights."""
-    for type_list, lights in traffic_master.traffic_lights.items():
-        for light in lights:
-            light_position = world_to_screen_vector(screen, light.node.position, zoom_factor)
-            color = get_state(light).get_color()
-            pygame.draw.circle(screen, color, light_position, 3, 3)
+    for light in traffic_master.traffic_lights:
+        light_position = world_to_screen_vector(screen, light.node.position, zoom_factor)
+        color = get_state(light).get_color()
+        pygame.draw.circle(screen, color, light_position, 3, 3)
 
 def render_manager(screen: Surface, manager: Manager) -> None:
     """Render function for Manager."""

@@ -32,11 +32,11 @@ def load_preset(file_path: str) -> tuple[Manager, TrafficMaster, list[Node], lis
     node_dict = load_nodes(presets["nodes"], nodes)
     edge_dict = load_edges(presets['edges'], curr_edges, node_dict)
     route_dict = load_routes(presets['routes'], routes, edge_dict)
-    intersection_dict = load_traffic_master(presets['traffic_master_intersections'], t_master_intersections)
-    load_traffic_lights(presets['traffic_lights'], intersection_dict, traffic_lights, node_dict)
     load_vehicles(presets["stored_vehicles"], vehicles, route_dict)
 
-    traffic_master = TrafficMaster(t_master_intersections, traffic_lights)
+    cycle_dict = load_traffic_master(presets['traffic_master_intersections'])
+    traffic_lights = load_traffic_lights(presets['traffic_lights'], cycle_dict, node_dict)
+    traffic_master = TrafficMaster(traffic_lights)
     
     manager_data = presets["manager"]
     manager = Manager(np.array(manager_data["position"]), manager_data["radius"], routes)

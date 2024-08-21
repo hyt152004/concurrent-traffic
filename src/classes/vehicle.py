@@ -69,7 +69,6 @@ def update_cmd(old_cmd: Command, t: np.array, a: np.array, elapsed_time: float=0
     del_index = None
     for i in range(len(old_cmd.accel_func.x)):
         if old_cmd.accel_func.x[i] >= elapsed_time:
-            print(i, len(old_cmd.accel_func.x))
             del_index = i
             break
 

@@ -1,5 +1,6 @@
 from classes.node import Node
 from enum import Enum
+from math import isclose
 
 class TrafficState(Enum):
     num_state: int
@@ -42,40 +43,36 @@ class TrafficState(Enum):
         raise ValueError(f"No TrafficState with value {next_value}")
 
 class TrafficLight:
-    state: TrafficState
-    time_in_state: int
-    cycle_duration: int
-    id: str
+    light_id: str
     node: Node
-    time_to_switch: dict[TrafficState, int]
-    prev_dt: int
+    switch_duration: float
+    total_duration: float
+    state: TrafficState
 
-    def __init__(self, id: str, node_pos: Node) -> None:
-        self.id = id
+    def __init__(self, light_id: str, node_pos: Node, switch_duration: dict[TrafficState, float]) -> None:
+        self.light_id = light_id
         self.node = node_pos
-        self.state = TrafficState.GREEN # will be changed by traffic_master according to the identifier/type
-        self.time_in_state = 0 # set later by traffic_master
-        self.cycle_duration = 0 # set later by traffic_master
-        self.time_to_switch = {} # set later by traffic_master
-        self.prev_dt = 0
+        self.state = min(switch_duration, key=switch_duration.get)
+        self.switch_duration = switch_duration
+        self.total_duration = max(switch_duration.values())
+        self.prev = 0
+        self.duration = 0
 
-def next_state(traffic_light: TrafficLight):
-    traffic_light.state = traffic_light.state.next()
-    reset_time_in_state(traffic_light)
+def next_state(traffic_light: TrafficLight, elapsed_time: float) -> None:
+    diff = elapsed_time - traffic_light.prev
+    traffic_light.duration += diff
+    traffic_light.prev = elapsed_time
 
-def reset_time_in_state(traffic_light: TrafficLight):
-    traffic_light.time_in_state = 0
+    if traffic_light.switch_duration[traffic_light.state] < traffic_light.duration:
+        traffic_light.state = traffic_light.state.next()
+
+    if traffic_light.duration > traffic_light.total_duration:
+        traffic_light.duration = 0
 
 def get_state(traffic_light: TrafficLight) -> TrafficState:
     return traffic_light.state
 
-def set_state(traffic_light: TrafficLight, state: TrafficState):
-    traffic_light.state = state
-
-def set_cycle_dur(traffic_light: TrafficLight, duration: int):
-    if duration < 1:
-        raise ValueError(f"Cycle duration cannot be less than 1.")
-    traffic_light.cycle_duration = duration
-
-def set_tts(traffic_light: TrafficLight, tts: dict[TrafficState, int]):
-    traffic_light.time_to_switch = tts
+def reset_state(traffic_light: TrafficLight) -> None:
+    traffic_light.state = min(traffic_light.switch_duration, key=traffic_light.switch_duration.get)
+    traffic_light.time = 0
+    traffic_light.prev = 0

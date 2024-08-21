@@ -81,12 +81,18 @@
       "upcycle": "eglington",
       "downcycle": "towncentre"
     }
-    ],
+  ],
 
-    "traffic_lights": [
-      {"id": "eglington", "node_position": "node_9"},
-      {"id": "towncentre", "node_position": "node_10"}
-    ],
+  "traffic_lights": [
+    {"id": "eglington", "node_position": "node_9"},
+    {"id": "eglington", "node_position": "node_12"},
+    {"id": "eglington", "node_position": "node_13"},
+    {"id": "eglington", "node_position": "node_8"},
+    {"id": "towncentre", "node_position": "node_10"},
+    {"id": "towncentre", "node_position": "node_15"},
+    {"id": "towncentre", "node_position": "node_11"},
+    {"id": "towncentre", "node_position": "node_14"}
+  ],
   
   "manager": {
     "position": [0, 0],

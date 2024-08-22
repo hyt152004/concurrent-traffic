@@ -41,7 +41,6 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     vehicles = vehicle_copy(initial_vehicles)
     is_run = True
     route_visible = True
-    standard_traffic = True
     selected_algorithm_button = None
 
     def toggle_update() -> None:
@@ -135,9 +134,6 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         # optionally render nodes and edges. for now always on
         render_world(screen, nodes, edges, route_visible, intersection_points)
 
-        # render_traffic_master(screen, traffic_master, time_elapsed)
-        render_traffic_lights(screen, traffic_master)
-        render_manager(screen, manager)
         render_vehicles(screen, vehicles)
         render_toolbar(screen, time_elapsed, buttons)
         render_title(screen)
@@ -148,13 +144,13 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             manager_event_loop(manager, vehicles, time_elapsed)
         else:
             driver_traffic_update_command(vehicles, time_elapsed)
+            render_traffic_lights(screen, traffic_master)
+            traffic_event_loop(traffic_master, time_elapsed)
 
         # vehicles 'cpu'
         for vehicle in vehicles:
             vehicle_event_loop(vehicle, time_elapsed)
 
-        if standard_traffic:
-            traffic_event_loop(traffic_master, time_elapsed) # change the details of each traffic light
 
         # vehicle removal 
         for vehicle in vehicles:

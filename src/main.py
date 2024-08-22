@@ -1,6 +1,9 @@
 import sys
 import numpy as np
 import json
+import logging
+from datetime import datetime
+import os
 
 from manager.manager import Manager
 from classes.node import Node
@@ -12,13 +15,37 @@ from simulator.simulator import run_simulation
 from helper import get_intersections, load_nodes, load_edges, load_routes, load_vehicles, load_traffic_master, load_traffic_lights
 
 def main() -> None:
+    verbose = False
+    # Check if -v flag is present
+    if '-v' in sys.argv:
+        verbose = True
+        sys.argv.remove('-v')
+    
     if len(sys.argv) != 2:
         print('Usage: python3 src/main.py <absolute_path_to_preset>')
         return
     
     preset_name = sys.argv[1]
-    
+   
+    if verbose:
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        log_dir = 'logs'
+        os.makedirs(log_dir, exist_ok=True)
+        logging.basicConfig(
+            level=logging.DEBUG,
+            # More info can be provided to logger, example: format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'  
+            format='%(message)s',
+            handlers=[
+                logging.FileHandler(os.path.join(log_dir, f"events-{timestamp}.log")), # To overwrite same log file: logging.FileHandler('vehicle_manager.log', w)
+                logging.StreamHandler()
+            ]
+        )
+        logging.info(f"Logging is enabled for preset: {preset_name}")
+    else:
+        logging.basicConfig(level=logging.CRITICAL)
+
     manager, traffic_master, nodes, curr_edges, routes, vehicles = load_preset(preset_name)
+
     intersection_points = get_intersections(routes)
     run_simulation(vehicles, nodes, curr_edges, routes, intersection_points, manager, traffic_master)
 

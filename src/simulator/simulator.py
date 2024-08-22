@@ -17,15 +17,15 @@ import pygame
 
 from classes.vehicle import Vehicle, vehicle_event_loop, vehicle_copy, driver_traffic_update_command
 from classes.button import Button
-from manager.manager import Manager, manager_event_loop, reset
+from manager.manager import Manager, manager_event_loop, reset, detect_collisions
 from classes.node import Node
 from classes.edge import Edge
-from classes.route import Route
+from classes.route import Route, route_position_to_world_position
 from standard_traffic.traffic_light import TrafficLight
 from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop, reset_traffic
 from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights
 from .update import update_world
-from .helper import scroll_handler
+from .helper import scroll_handler, world_to_screen_scalar, world_to_screen_vector
 
 def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager, traffic_master: TrafficMaster) -> None:
     """Initializes and runs the pygame simulator. Requires initialization of lanes, manager, vehicles."""
@@ -42,6 +42,7 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     is_run = True
     route_visible = True
     standard_traffic = True
+    selected_algorithm_button = None
 
     def toggle_update() -> None:
         """Toggles between resuming or pausing the simulator."""
@@ -86,6 +87,19 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         elif operation == "-":
             playback_speed_factor = max(MIN_PLAYBACK_SPEED_FACTOR, playback_speed_factor - 0.25)
         display_playback_speed.text = str(playback_speed_factor) + "x"
+        
+    def toggle_algorithm_selector(updated_algorithm: Button) -> None:
+        nonlocal selected_algorithm_button
+        if selected_algorithm_button != None:
+            selected_algorithm_button.set_colour((40, 40, 40))
+        else:
+            # algorithm_selector_standard_traffic is None only at the beginning.
+            # Since algorithm_selector_standard_traffic starts with red colour, 
+            # we need to manaually change its colour only for the start
+            algorithm_selector_standard_traffic.set_colour((40, 40, 40))
+        selected_algorithm_button = updated_algorithm
+        selected_algorithm_button.set_colour((255, 50, 50))
+        restart_func()
     
     toggle_button = Button((40, 40, 40), (255, 50, 50), (5, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'toggle update', toggle_update, ())
     restart_button = Button((40, 40, 40), (255, 50, 50), (110, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'restart', restart_func, ())
@@ -95,8 +109,11 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     subtract_playback_speed = Button((40, 40, 40), (255, 50, 50), (445, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '-', lambda: toggle_playback_speed("-"), ())
     display_playback_speed = Button((40, 40, 40), (40, 40, 40), (480, screen.get_height()-TOOLBAR_HEIGHT+50), (45, 30), str(playback_speed_factor) + "x", None, ())
     add_playback_speed = Button((40, 40, 40), (255, 50, 50), (525, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '+', lambda: toggle_playback_speed("+"), ())
+    
+    algorithm_selector_v0 = Button((40, 40, 40), (255, 50, 50), (565, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'ALG 0', lambda: toggle_algorithm_selector(algorithm_selector_v0),())
+    algorithm_selector_standard_traffic = Button((255, 50, 50), (255, 50, 50), (700, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'Standard Traffic', lambda: toggle_algorithm_selector(algorithm_selector_standard_traffic),())
 
-    buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed]
+    buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed, algorithm_selector_v0, algorithm_selector_standard_traffic]
 
     while running:
         # poll for events
@@ -104,7 +121,7 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
+        
             if event.type == pygame.MOUSEBUTTONDOWN:
                 [b.click() for b in buttons]
 
@@ -117,6 +134,7 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
 
         # optionally render nodes and edges. for now always on
         render_world(screen, nodes, edges, route_visible, intersection_points)
+
         # render_traffic_master(screen, traffic_master, time_elapsed)
         render_traffic_lights(screen, traffic_master)
         render_manager(screen, manager)
@@ -124,8 +142,12 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         render_toolbar(screen, time_elapsed, buttons)
         render_title(screen)
 
-        # manager 'cpu'
-        manager_event_loop(manager, vehicles, time_elapsed)
+        # manager 'cpu' or standard traffic 
+        if selected_algorithm_button == algorithm_selector_v0:
+            render_manager(screen, manager)
+            manager_event_loop(manager, vehicles, time_elapsed)
+        else:
+            driver_traffic_update_command(vehicles, time_elapsed)
 
         # vehicles 'cpu'
         for vehicle in vehicles:
@@ -143,7 +165,11 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             # physical changes to world (updating positions, velocity, etc.)
             update_world(delta_time * playback_speed_factor, vehicles)
             time_elapsed += delta_time * playback_speed_factor
-            
+
+        # checks if collision has occured
+        if detect_collisions(manager, vehicles, time_elapsed) == True:
+            is_run = False
+
         # updates the screen
         pygame.display.update()
         delta_time = clock.tick(60) / 1000

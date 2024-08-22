@@ -38,8 +38,10 @@
   ],
 
   "traffic_lights": [
-    {"id": "eglington", "node_position": "node_7"},
-    {"id": "towncentre", "node_position": "node_3"}
+    {"id": "eglington", "node_position": "node_9"},
+    {"id": "eglington", "node_position": "node_13"},
+    {"id": "towncentre", "node_position": "node_15"},
+    {"id": "towncentre", "node_position": "node_11"}
   ],
 
   "manager": {

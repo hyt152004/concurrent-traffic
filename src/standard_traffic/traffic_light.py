@@ -76,3 +76,4 @@ def reset_state(traffic_light: TrafficLight) -> None:
     traffic_light.state = min(traffic_light.switch_duration, key=traffic_light.switch_duration.get)
     traffic_light.time = 0
     traffic_light.prev_elapsed = 0
+    traffic_light.duration = 0

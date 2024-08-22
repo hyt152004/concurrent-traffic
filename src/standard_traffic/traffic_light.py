@@ -1,6 +1,5 @@
 from classes.node import Node
 from enum import Enum
-from math import isclose
 
 class TrafficState(Enum):
     num_state: int
@@ -45,9 +44,11 @@ class TrafficState(Enum):
 class TrafficLight:
     light_id: str
     node: Node
+    state: TrafficState
     switch_duration: float
     total_duration: float
-    state: TrafficState
+    prev_elapsed: float
+    duration: float
 
     def __init__(self, light_id: str, node_pos: Node, switch_duration: dict[TrafficState, float]) -> None:
         self.light_id = light_id
@@ -55,13 +56,14 @@ class TrafficLight:
         self.state = min(switch_duration, key=switch_duration.get)
         self.switch_duration = switch_duration
         self.total_duration = max(switch_duration.values())
-        self.prev = 0
+        self.prev_elapsed = 0
         self.duration = 0
 
 def next_state(traffic_light: TrafficLight, elapsed_time: float) -> None:
-    diff = elapsed_time - traffic_light.prev
-    traffic_light.duration += diff
-    traffic_light.prev = elapsed_time
+    """Sets traffic_light to next traffic state if the time for the current traffic state has expired."""
+    time_diff = elapsed_time - traffic_light.prev_elapsed
+    traffic_light.duration += time_diff
+    traffic_light.prev_elapsed = elapsed_time
 
     if traffic_light.switch_duration[traffic_light.state] < traffic_light.duration:
         traffic_light.state = traffic_light.state.next()
@@ -69,10 +71,8 @@ def next_state(traffic_light: TrafficLight, elapsed_time: float) -> None:
     if traffic_light.duration > traffic_light.total_duration:
         traffic_light.duration = 0
 
-def get_state(traffic_light: TrafficLight) -> TrafficState:
-    return traffic_light.state
-
 def reset_state(traffic_light: TrafficLight) -> None:
+    """Reset traffic light state."""
     traffic_light.state = min(traffic_light.switch_duration, key=traffic_light.switch_duration.get)
     traffic_light.time = 0
-    traffic_light.prev = 0
+    traffic_light.prev_elapsed = 0

@@ -7,7 +7,6 @@ from classes.node import Node
 from classes.edge import Edge
 from classes.route import Route
 from classes.vehicle import Vehicle
-from standard_traffic.traffic_light import TrafficLight
 from standard_traffic.traffic_master import TrafficMaster
 from simulator.simulator import run_simulation
 from helper import get_intersections, load_nodes, load_edges, load_routes, load_vehicles, load_traffic_master, load_traffic_lights

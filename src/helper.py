@@ -139,10 +139,8 @@ def load_vehicles(loaded_vehicles: object, vehicles: list[Vehicle], route_dict: 
         vehicles.append(new_vehicle)
     return vehicle_dict
 
-def load_traffic_lights(loaded_lights: object, cycle_dict: dict[str, dict[TrafficState, float]], node_dict: dict[str, Node]) -> dict[str, TrafficLight]:
-    """Return id -> dictionary of traffic lights."""
-    # light_dict:
-    # light["id"]) : light["node_position"]
+def load_traffic_lights(loaded_lights: object, cycle_dict: dict[str, dict[TrafficState, float]], node_dict: dict[str, Node]) -> list[TrafficLight]:
+    """Return list of traffic lights."""
     light_list = []
     node_set = set()
 
@@ -159,12 +157,8 @@ def load_traffic_lights(loaded_lights: object, cycle_dict: dict[str, dict[Traffi
 
     return light_list
 
-def load_traffic_master(loaded_intersections: object) -> dict[tuple[str], tuple[int]]:
-    """Return id -> Dictionary of intersections"""
-    #interection_dict: 
-    # (upcycle, downcycle): (green, yellow, red)
-    # intersection list:
-    # (upcycle, downcycle, green, yellow, red)
+def load_traffic_master(loaded_intersections: object) -> dict[str, dict[TrafficState, float]]:
+    """Return id -> Dictionary of traffic light durations."""
     cycle_dict = {}
 
     for intersection in loaded_intersections:

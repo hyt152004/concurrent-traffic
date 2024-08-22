@@ -22,7 +22,7 @@ from classes.node import Node
 from classes.edge import Edge
 from classes.route import Route
 from standard_traffic.traffic_light import TrafficLight
-from standard_traffic.traffic_master import TrafficMaster, t_master_event_loop, reset_traffic
+from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop, reset_traffic
 from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights
 from .update import update_world
 from .helper import scroll_handler
@@ -132,7 +132,7 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             vehicle_event_loop(vehicle, time_elapsed)
 
         if standard_traffic:
-            t_master_event_loop(traffic_master, time_elapsed) # change the details of each traffic light
+            traffic_event_loop(traffic_master, time_elapsed) # change the details of each traffic light
 
         # vehicle removal 
         for vehicle in vehicles:

@@ -19,6 +19,7 @@ class Vehicle:
     width: float              = 2.23            # float representing width of car in meters. orthogonal to direction
     length: float             = 4.90            # float representing length of car in meters. parallel to direction
     pivot_distance: float     = 1.25            # float representing distance from pivot to center.
+    collided: bool            = False           # if true, will render car red.
     image: Surface
     direction_angle           = 0
     leading_vehicle             = None          # vehicle the current vehicle is trailing if any
@@ -74,7 +75,6 @@ def update_cmd(old_cmd: Command, t: np.array, a: np.array, elapsed_time: float=0
     del_index = None
     for i in range(len(old_cmd.accel_func.x)):
         if old_cmd.accel_func.x[i] >= elapsed_time:
-            # print(i, len(old_cmd.accel_func.x))
             del_index = i
             break
 

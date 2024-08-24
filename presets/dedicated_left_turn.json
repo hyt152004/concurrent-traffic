@@ -96,19 +96,19 @@
     "routes": [
         {"id": "0r1", "source": "002", "intermediate": ["005", "0r1", "100"], "target": "101", "comment": "south to east"},
         {"id": "0d2", "source": "002", "intermediate": ["005", "0d2", "200"], "target": "201", "comment": "south to north"},
-        {"id": "0l3", "source": "002", "intermediate": ["003", "004", "0l3"],        "target": "301", "comment": "south to west"},
+        {"id": "0l3", "source": "002", "intermediate": ["003", "004", "0l3"], "target": "301", "comment": "south to west"},
 
         {"id": "1r2", "source": "102", "intermediate": ["105", "1r2", "200"], "target": "201", "comment": "east to north"},
         {"id": "1s3", "source": "102", "intermediate": ["105", "1s3", "300"], "target": "301", "comment": "east to west"},
-        {"id": "1l0", "source": "102", "intermediate": ["103", "104", "1l0"],        "target": "001", "comment": "east to south"},
+        {"id": "1l0", "source": "102", "intermediate": ["103", "104", "1l0"], "target": "001", "comment": "east to south"},
 
         {"id": "2r3", "source": "202", "intermediate": ["205", "2r3", "300"], "target": "301", "comment": "north to west"},
         {"id": "2s0", "source": "202", "intermediate": ["205", "2s0", "000"], "target": "001", "comment": "north to south"},
-        {"id": "2l1", "source": "202", "intermediate": ["203", "204", "2l1"],        "target": "101", "comment": "north to east"},
+        {"id": "2l1", "source": "202", "intermediate": ["203", "204", "2l1"], "target": "101", "comment": "north to east"},
 
         {"id": "3r0", "source": "302", "intermediate": ["305", "3r0", "000"], "target": "001", "comment": "west to south"},
         {"id": "3s1", "source": "302", "intermediate": ["305", "3s1", "100"], "target": "101", "comment": "west to east"},
-        {"id": "3l2", "source": "302", "intermediate": ["303", "304", "3l2"],        "target": "201", "comment": "west to north"}
+        {"id": "3l2", "source": "302", "intermediate": ["303", "304", "3l2"], "target": "201", "comment": "west to north"}
     ],
   
     "manager": {

@@ -6,7 +6,7 @@ TOOLBAR_HEIGHT = 100
 MIN_ZOOM_FACTOR = 1
 MAX_ZOOM_FACTOR = 8
 
-MIN_PLAYBACK_SPEED_FACTOR = 0.25
+MIN_PLAYBACK_SPEED_FACTOR = 0.0625
 MAX_PLAYBACK_SPEED_FACTOR = 2
 
 # world describes 160mx160m space
@@ -77,9 +77,9 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         """Adjusts playback speed."""
         nonlocal playback_speed_factor
         if operation == "+":
-            playback_speed_factor = min(MAX_PLAYBACK_SPEED_FACTOR, playback_speed_factor + 0.25)
+            playback_speed_factor = min(MAX_PLAYBACK_SPEED_FACTOR, playback_speed_factor * 2)
         elif operation == "-":
-            playback_speed_factor = max(MIN_PLAYBACK_SPEED_FACTOR, playback_speed_factor - 0.25)
+            playback_speed_factor = max(MIN_PLAYBACK_SPEED_FACTOR, playback_speed_factor / 2)
         display_playback_speed.text = str(playback_speed_factor) + "x"
     
     toggle_button = Button((48,54,60), (64,72,80), (5, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'toggle update', toggle_update, ())

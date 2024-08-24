@@ -18,7 +18,8 @@ def main() -> None:
     preset_name = sys.argv[1]
     
     manager, nodes, curr_edges, routes, vehicles = load_preset(preset_name)
-    intersection_points = get_intersections(routes)
+    # intersection_points = get_intersections(routes)
+    intersection_points = []
     run_simulation(vehicles, nodes, curr_edges, routes, intersection_points, manager)
 
 def load_preset(file_path: str) -> tuple[Manager, list[Node], list[Edge], list[Route], list[Vehicle]]:

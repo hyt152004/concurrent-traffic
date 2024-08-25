@@ -3,7 +3,7 @@ from classes.route import Route
 from classes.node import Node
 from classes.edge import Edge, StraightEdge, CircularEdge
 from classes.vehicle import Vehicle
-from standard_traffic.traffic_light import TrafficLight, TrafficState
+from standard_traffic.traffic_light import TrafficLight, get_state
 import sympy
 from sympy import Point2D
 from itertools import combinations
@@ -139,52 +139,23 @@ def load_vehicles(loaded_vehicles: object, vehicles: list[Vehicle], route_dict: 
         vehicles.append(new_vehicle)
     return vehicle_dict
 
-def load_traffic_lights(loaded_lights: object, cycle_dict: dict[str, dict[TrafficState, float]], node_dict: dict[str, Node]) -> list[TrafficLight]:
+def load_traffic_lights(loaded_lights: object, node_dict: dict[str, Node]) -> list[TrafficLight]:
     """Return list of traffic lights."""
     light_list = []
     node_set = set()
 
     for light in loaded_lights:
-        if light["node_position"] in node_set:
-            raise ValueError(f"Duplicate traffic_light at node_position: {light['node_position']}.")
-        
-        if light["node_position"] not in node_dict:
-            raise KeyError(f"node_position {light['node_position']} not found in node_dict.")
+        cycle = [tuple([get_state(pair[0]), pair[1]]) for pair in light["cycle"]]
 
-        new_light = TrafficLight(light["id"], node_dict[light["node_position"]], cycle_dict[light["id"]])
-        light_list.append(new_light)
-        node_set.add(light["node_position"])
+        for node in light["node_positions"]:
+            if node in node_set:
+                raise ValueError(f"Duplicate traffic_light at node_position: {light['node_position']}.")
+            
+            if node not in node_dict:
+                raise KeyError(f"node_position {light['node_positions']} not found in node_dict.")
+
+            new_light = TrafficLight(light["id"], node_dict[node], cycle)
+            light_list.append(new_light)
+            node_set.add(node)
 
     return light_list
-
-def load_traffic_master(loaded_intersections: object) -> dict[str, dict[TrafficState, float]]:
-    """Return id -> Dictionary of traffic light durations."""
-    cycle_dict = {}
-
-    for intersection in loaded_intersections:
-
-        if intersection["upcycle"] in cycle_dict:
-            raise ValueError(f"Duplicate intersection: {intersection['upcycle']}.")
-        
-        upcycle_duration_dict = {
-            TrafficState.GREEN: intersection["cycle"]["green"], 
-            TrafficState.YELLOW: intersection["cycle"]["green"] + intersection["cycle"]["yellow"], 
-            TrafficState.RED: intersection["cycle"]["green"] + intersection["cycle"]["yellow"] + intersection["cycle"]["red"]
-        }
-
-        cycle_dict[intersection["upcycle"]] = upcycle_duration_dict
-
-        if intersection["downcycle"] in cycle_dict:
-            raise ValueError(f"Duplicate intersection: {intersection['downcycle']}.")
-        
-        downcycle_duration_dict = {
-            TrafficState.RED: intersection["cycle"]["red"], 
-            TrafficState.GREEN: intersection["cycle"]["red"] + intersection["cycle"]["green"], 
-            TrafficState.YELLOW: intersection["cycle"]["red"] + intersection["cycle"]["green"] + intersection["cycle"]["yellow"]
-        }
-
-        cycle_dict[intersection["downcycle"]] = downcycle_duration_dict
-
-    return cycle_dict
-
-

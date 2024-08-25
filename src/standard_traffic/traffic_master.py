@@ -1,4 +1,4 @@
-from .traffic_light import TrafficLight, next_state, reset_state
+from .traffic_light import TrafficLight, next_light_state, reset_state
 
 class TrafficMaster:
     traffic_lights: list[TrafficLight]
@@ -11,7 +11,7 @@ class TrafficMaster:
 def traffic_event_loop(traffic_master: TrafficMaster, delta_time: int) -> None:
     """Master event loop for traffic master."""
     for traffic_light in traffic_master.traffic_lights:
-        next_state(traffic_light, delta_time)
+        next_light_state(traffic_light, delta_time)
 
 def reset_traffic(traffic_master: TrafficMaster) -> None:
     """reset all traffic master's traffic lights."""

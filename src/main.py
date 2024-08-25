@@ -12,7 +12,7 @@ from classes.route import Route
 from classes.vehicle import Vehicle
 from standard_traffic.traffic_master import TrafficMaster
 from simulator.simulator import run_simulation
-from helper import get_intersections, load_nodes, load_edges, load_routes, load_vehicles, load_traffic_master, load_traffic_lights
+from helper import get_intersections, load_nodes, load_edges, load_routes, load_vehicles, load_traffic_lights
 
 def main() -> None:
     verbose = False
@@ -60,8 +60,7 @@ def load_preset(file_path: str) -> tuple[Manager, TrafficMaster, list[Node], lis
     route_dict = load_routes(presets['routes'], routes, edge_dict)
     load_vehicles(presets["stored_vehicles"], vehicles, route_dict)
 
-    cycle_dict = load_traffic_master(presets['traffic_master_intersections'])
-    traffic_lights = load_traffic_lights(presets['traffic_lights'], cycle_dict, node_dict)
+    traffic_lights = load_traffic_lights(presets['traffic_lights'], node_dict)
     traffic_master = TrafficMaster(traffic_lights)
     
     manager_data = presets["manager"]

@@ -1,15 +1,12 @@
 import numpy as np
 from .edge import Edge, StraightEdge, CircularEdge, get_length
-from standard_traffic.traffic_light import TrafficLight
 
 class Route():
     """A Route consists of Edges linked together."""
     current_id: int
     edges: list[Edge]
-    total_length: float = 0 # float representing total length of the route in meters
+    total_length: float = 0
     pos_to_edge_map: dict[tuple, Edge]
-
-    traffic_lights: dict[TrafficLight, float] # float represents route_position
 
     def __init__(self, id: int, edges: list[Edge]) -> None:
         self.current_id = id

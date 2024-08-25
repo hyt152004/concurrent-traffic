@@ -21,11 +21,13 @@ from manager.manager import Manager, manager_event_loop, reset, detect_collision
 from classes.node import Node
 from classes.edge import Edge
 from classes.route import Route, route_position_to_world_position
-from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render
+from standard_traffic.traffic_light import TrafficLight
+from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop, reset_traffic
+from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights
 from .update import update_world
 from .helper import scroll_handler, world_to_screen_scalar, world_to_screen_vector
 
-def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager) -> None:
+def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: list[Edge], routes: list[Route], intersection_points, manager: Manager, traffic_master: TrafficMaster) -> None:
     """Initializes and runs the pygame simulator. Requires initialization of lanes, manager, vehicles."""
     pygame.init()
     screen = pygame.display.set_mode((ORIGINAL_SCREEN_WIDTH, ORIGINAL_SCREEN_HEIGHT), pygame.RESIZABLE)
@@ -53,12 +55,14 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         nonlocal delta_time
         nonlocal manager
         nonlocal time_elapsed
+        nonlocal traffic_master
 
         vehicles = vehicle_copy(initial_vehicles)
         clock = pygame.time.Clock()
         delta_time = 0
         time_elapsed = 0
         reset(manager)
+        reset_traffic(traffic_master)
     
     def toggle_route_visibility() -> None:
         """Toggles route visibility."""
@@ -129,6 +133,7 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
 
         # optionally render nodes and edges. for now always on
         render_world(screen, nodes, edges, route_visible, intersection_points)
+
         render_vehicles(screen, vehicles)
         render_toolbar(screen, time_elapsed, buttons)
         render_title(screen)
@@ -139,10 +144,13 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             manager_event_loop(manager, vehicles, time_elapsed)
         else:
             driver_traffic_update_command(vehicles, time_elapsed)
+            render_traffic_lights(screen, traffic_master)
+            traffic_event_loop(traffic_master, time_elapsed)
 
         # vehicles 'cpu'
         for vehicle in vehicles:
             vehicle_event_loop(vehicle, time_elapsed)
+
 
         # vehicle removal 
         for vehicle in vehicles:

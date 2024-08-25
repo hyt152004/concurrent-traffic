@@ -79,12 +79,12 @@
     {
       "id": "eglington",
       "node_positions": ["node_9", "node_13"],
-      "cycle": [["green", 4], ["yellow", 1], ["red", 5]]
+      "cycle": [["green", 4], ["yellow", 1], ["red", 1], ["red", 5], ["red", 1]]
     },
     {
       "id": "towncentre",
       "node_positions": ["node_15", "node_11"],
-      "cycle": [["green", 4], ["yellow", 1], ["red", 5]]
+      "cycle": [["red", 5], ["red", 1], ["green", 4], ["yellow", 1], ["red", 1]]
     }
   ],
   

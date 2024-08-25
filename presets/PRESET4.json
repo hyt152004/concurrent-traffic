@@ -67,21 +67,18 @@
     {"id": "route_3", "source": "edge_7", "intermediate": ["edge_18"], "target": "edge_0", "comment": "right from west"}
   ],
 
-  "traffic_master_intersections": [
+  "traffic_lights": [
     {
-      "cycle": {"green": 5, "yellow": 2, "red": 7},
-      "upcycle": "eglington",
-      "downcycle": "towncentre"
+      "id": "eglington",
+      "node_positions": ["node_9", "node_13"],
+      "cycle": [["green", 4], ["yellow", 1], ["red", 1], ["red", 5], ["red", 1]]
+    },
+    {
+      "id": "towncentre",
+      "node_positions": ["node_15", "node_11"],
+      "cycle": [["red", 5], ["red", 1], ["green", 4], ["yellow", 1], ["red", 1]]
     }
   ],
-
-  "traffic_lights": [
-    {"id": "eglington", "node_position": "node_9"},
-    {"id": "eglington", "node_position": "node_13"},
-    {"id": "towncentre", "node_position": "node_15"},
-    {"id": "towncentre", "node_position": "node_11"}
-  ],
-
   "manager": {
     "position": [0, 0],
     "radius": 50

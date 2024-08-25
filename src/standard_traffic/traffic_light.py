@@ -63,6 +63,6 @@ def get_light_limit(traffic_light: TrafficLight) -> float:
 
 def reset_state(traffic_light: TrafficLight) -> None:
     """Reset traffic light state."""
-    traffic_light.state = traffic_light.cycle[0][0]
+    traffic_light.i = 0
     traffic_light.prev_elapsed = 0
     traffic_light.duration = 0

@@ -5,6 +5,8 @@ from classes.vehicle import Vehicle
 from classes.node import Node
 from classes.edge import Edge, StraightEdge, CircularEdge
 from classes.route import route_position_to_world_position, direction_at_route_position
+from standard_traffic.traffic_master import TrafficMaster
+from standard_traffic.traffic_light import get_color, get_light_state
 from manager.manager import Manager, CAR_COLLISION_DISTANCE
 from classes.button import Button
 from .helper import world_to_screen_vector, world_to_screen_scalar, create_rotation_matrix, rotate_vector
@@ -57,7 +59,7 @@ def render_intersections(screen: Surface, intersection_points) -> None:
     """Render function for intersecting Routes."""
     for intersection in intersection_points:
         node_position = world_to_screen_vector(screen, np.array(list(intersection[2])), zoom_factor)
-        pygame.draw.circle(screen, "blue", node_position, 3)
+        # pygame.draw.circle(screen, "blue", node_position, 3)
 
 def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
     """Render function for Vehicles."""
@@ -72,14 +74,34 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
         img = pygame.transform.smoothscale(vehicle.image, (vehicle_screen_length, vehicle_screen_width))
         vehicle_angle = direction_at_route_position(vehicle.route, vehicle.route_position)
         img = pygame.transform.rotate(img, vehicle_angle)
-        car_rect = img.get_rect()
-        car_rect.center = vehicle_center_screen_pos
-        screen.blit(img, car_rect)
+
+        if vehicle.collided == True:
+            # gets size of image, creates a surface, and fills with with translucent red
+            img_size = img.get_size()
+            hue_surface = pygame.Surface(img_size)
+            hue_surface.fill((255,0,0))
+            hue_surface.set_alpha(100)
+            
+            # blits hue_surface (red surface) onto img_with_hue (copy of img)
+            img_with_hue = img.copy()
+            img_with_hue.blit(hue_surface, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
+            # get the center of the car
+            car_rect = img_with_hue.get_rect()
+            car_rect.center = vehicle_center_screen_pos
+            # blit red overlay car onto screen
+            screen.blit(img_with_hue, car_rect)         
+        
+        else: # else display car w/o red overlay
+            car_rect = img.get_rect()
+            car_rect.center = vehicle_center_screen_pos
+            screen.blit(img, car_rect)
+
         car_collision_screen_distance = world_to_screen_scalar(screen, CAR_COLLISION_DISTANCE/2, zoom_factor)
         pygame.draw.circle(screen, "red", vehicle_center_screen_pos, car_collision_screen_distance, 1)
         vehicle_text_font = pygame.font.SysFont('Consolas', 12)
         text_surface = vehicle_text_font.render(vehicle.name, True, (139, 69, 19))
         screen.blit(text_surface, (car_rect.center[0]-(vehicle_text_font.size(vehicle.name)[0])/2, car_rect.center[1]-vehicle_screen_length))
+
 
 def render_background(screen: Surface) -> None:
     """Render function for background."""
@@ -105,6 +127,13 @@ def render_world(screen: Surface, nodes: list[Node], edges: list[Edge], route_vi
     render_intersections(screen, intersection_points)
     render_border(screen)
     # render_scenery()
+
+def render_traffic_lights(screen: Surface, traffic_master: TrafficMaster) -> None:
+    """Render function for TrafficMaster that controls all the TrafficLights."""
+    for light in traffic_master.traffic_lights:
+        light_position = world_to_screen_vector(screen, light.node.position, zoom_factor)
+        color = get_color(get_light_state(light))
+        pygame.draw.circle(screen, color, light_position, 3, 3)
 
 def render_manager(screen: Surface, manager: Manager) -> None:
     """Render function for Manager."""
@@ -212,3 +241,8 @@ def render_title(screen) -> None:
     FONT = pygame.font.Font("assets/fonts/DMSans-Black.ttf", 16)
     version_surface = FONT.render(f"- v0.0.2", True, (255, 255, 255))
     screen.blit(version_surface, (235,screen.get_height()-TOOLBAR_HEIGHT+11))
+
+#     FONT = pygame.font.SysFont("Segoe UI", 15, bold=True, italic=False)
+#     text_surface = FONT.render(f"Concurent Traffic v0.0.2", True, (255, 255, 255))
+#     screen.blit(text_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+6))
+

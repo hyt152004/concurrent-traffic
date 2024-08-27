@@ -18,6 +18,7 @@ class Vehicle:
     width: float              = 2.23            # float representing width of car in meters. orthogonal to direction
     length: float             = 4.90            # float representing length of car in meters. parallel to direction
     pivot_distance: float     = 1.25            # float representing distance from pivot to center.
+    collided: bool            = False           # if true, will render car red.
     image: Surface
 
     command: Command          = Command(np.array([0]), np.array([0]))             # Command
@@ -79,7 +80,7 @@ def update_cmd(old_cmd: Command, t: np.array, a: np.array, elapsed_time: float=0
 
 ### FUNCTIONS FOR STANDARD TRAFFIC
 
-def driver_traffic_update_command(vehicle: Vehicle) -> None:
+def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
     """Update command for standard traffic."""
     cmd = None
     # calculate command that achieves two things
@@ -98,4 +99,3 @@ def driver_traffic_update_command(vehicle: Vehicle) -> None:
     # 1 and 2 need to work together. If 2. determines that we can speed up,
     # but the car is approaching a red traffic light,
     # then the final command should be to slow down
-    vehicle.command = cmd

@@ -3,6 +3,7 @@ from classes.route import Route
 from classes.node import Node
 from classes.edge import Edge, StraightEdge, CircularEdge
 from classes.vehicle import Vehicle
+from standard_traffic.traffic_light import TrafficLight, get_state
 import sympy
 from sympy import Point2D
 from itertools import combinations
@@ -76,10 +77,13 @@ def load_edges(loaded_edges: object, edges: list[Edge], node_dict: dict[str, Nod
     for edge in loaded_edges:
         if edge["id"] in edge_dict:
             raise ValueError(f"Duplicate edge ID found: {edge['id']}")
+        t_light = None
+        if edge.get("traffic_light"):
+            t_light = edge["light"]
         if edge.get("center"):
-            new_edge = CircularEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]], np.array(edge["center"]), edge["clockwise"])
+            new_edge = CircularEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]], np.array(edge["center"]), clockwise=edge["clockwise"], traffic_light=t_light)
         else:
-            new_edge = StraightEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]])
+            new_edge = StraightEdge(edge["id"], node_dict[edge["source"]], node_dict[edge["target"]], t_light)
         edge_dict[edge["id"]] = new_edge
         edges.append(new_edge)
     return edge_dict
@@ -133,5 +137,25 @@ def load_vehicles(loaded_vehicles: object, vehicles: list[Vehicle], route_dict: 
         new_vehicle = Vehicle(v["id"], v["name"], route_dict[v["route"]], v["route_position"], v["velocity"], 0, 2.23, 4.90, 1.25, 'assets/sedan.png')
         vehicle_dict[v["id"]] = new_vehicle
         vehicles.append(new_vehicle)
+    return vehicle_dict
 
+def load_traffic_lights(loaded_lights: object, node_dict: dict[str, Node]) -> list[TrafficLight]:
+    """Return list of traffic lights."""
+    light_list = []
+    node_set = set()
 
+    for light in loaded_lights:
+        cycle = [tuple([get_state(pair[0]), pair[1]]) for pair in light["cycle"]]
+
+        for node in light["node_positions"]:
+            if node in node_set:
+                raise ValueError(f"Duplicate traffic_light at node_position: {light['node_position']}.")
+            
+            if node not in node_dict:
+                raise KeyError(f"node_position {light['node_positions']} not found in node_dict.")
+
+            new_light = TrafficLight(light["id"], node_dict[node], cycle)
+            light_list.append(new_light)
+            node_set.add(node)
+
+    return light_list

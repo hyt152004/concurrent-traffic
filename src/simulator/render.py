@@ -73,6 +73,7 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
         vehicle_center_screen_pos = world_to_screen_vector(screen, vehicle_center_point, zoom_factor)
         img = pygame.transform.smoothscale(vehicle.image, (vehicle_screen_length, vehicle_screen_width))
         vehicle_angle = direction_at_route_position(vehicle.route, vehicle.route_position)
+        vehicle.direction_angle = vehicle_angle
         img = pygame.transform.rotate(img, vehicle_angle)
 
         if vehicle.collided == True:

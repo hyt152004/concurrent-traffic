@@ -1,0 +1,120 @@
+{
+    "stored_vehicles": [
+        {"id": "vehicle_0", "name": "Camry", "route": "0s2", "route_position": 40, "velocity": 8},
+        {"id": "vehicle_1", "name": "Camry", "route": "0s2", "route_position": 30, "velocity": 8},
+        {"id": "vehicle_2", "name": "Camry", "route": "0s2", "route_position": 20, "velocity": 8},
+        {"id": "vehicle_3", "name": "Camry", "route": "0r1", "route_position": 10, "velocity": 8},
+        {"id": "vehicle_4", "name": "Camry", "route": "0s2", "route_position": 0, "velocity": 8},
+        {"id": "vehicle_5", "name": "stall", "route": "0s2", "route_position": 100, "velocity": 0}
+    ],
+  
+    "nodes": [
+      {"id": "000",  "position": [   -3,   80], "comment": "south (before intersection)"},
+      {"id": "001",  "position": [    3,   80]},
+      {"id": "002",  "position": [    3,   46]},
+      {"id": "003",  "position": [    0,   26]},
+      {"id": "004",  "position": [   -3,  7.5], "comment": "south (after intersection)"},
+      {"id": "005",  "position": [   -3, 10.5]},
+      {"id": "006",  "position": [    0,  7.5]},
+      {"id": "007",  "position": [    3,  7.5]},
+      {"id": "100",  "position": [   80,    3], "comment": "east (before intersection)"},
+      {"id": "101",  "position": [   80,   -3]},
+      {"id": "102",  "position": [   46,   -3]},
+      {"id": "103",  "position": [   26,    0]},
+      {"id": "104",  "position": [  7.5,    3], "comment": "east (after intersection)"},
+      {"id": "105",  "position": [ 10.5,    3]},
+      {"id": "106",  "position": [  7.5,    0]},
+      {"id": "107",  "position": [  7.5,   -3]},
+      {"id": "200",  "position": [    3,  -80], "comment": "north (before intersection)"},
+      {"id": "201",  "position": [   -3,  -80]},
+      {"id": "202",  "position": [   -3,  -46]},
+      {"id": "203",  "position": [    0,  -26]},
+      {"id": "204",  "position": [    3, -7.5], "comment": "north (after intersection)"},
+      {"id": "205",  "position": [    3,-10.5]},
+      {"id": "206",  "position": [    0, -7.5]},
+      {"id": "207",  "position": [   -3, -7.5]},
+      {"id": "300",  "position": [  -80,   -3], "comment": "west (before intersection)"},
+      {"id": "301",  "position": [  -80,    3]},
+      {"id": "302",  "position": [  -46,    3]},
+      {"id": "303",  "position": [  -26,    0]},
+      {"id": "304",  "position": [ -7.5,   -3], "comment": "west (after intersection)"},
+      {"id": "305",  "position": [-10.5,   -3]},
+      {"id": "306",  "position": [ -7.5,    0]},
+      {"id": "307",  "position": [ -7.5,    3]}
+    ],
+  
+    "edges": [
+        {"id": "000",  "source": "004",  "target": "005", "comment": "south first exit"},
+        {"id": "001",  "source": "005",  "target": "000", "comment": "south last exit"},
+        {"id": "002",  "source": "001",  "target": "002"},
+        {"id": "003",  "source": "002",  "target": "003"},
+        {"id": "004",  "source": "003",  "target": "006"},
+        {"id": "005",  "source": "002",  "target": "007"},
+        {"id": "100",  "source": "104",  "target": "105", "comment": "east first exit"},
+        {"id": "101",  "source": "105",  "target": "100", "comment": "east last exit"},
+        {"id": "102",  "source": "101",  "target": "102"},
+        {"id": "103",  "source": "102",  "target": "103"},
+        {"id": "104",  "source": "103",  "target": "106"},
+        {"id": "105",  "source": "102",  "target": "107"},
+        {"id": "200",  "source": "204",  "target": "205", "comment": "north first exit"},
+        {"id": "201",  "source": "205",  "target": "200", "comment": "north last exit"},
+        {"id": "202",  "source": "201",  "target": "202"},
+        {"id": "203",  "source": "202",  "target": "203"},
+        {"id": "204",  "source": "203",  "target": "206"},
+        {"id": "205",  "source": "202",  "target": "207"},
+        {"id": "300",  "source": "304",  "target": "305", "comment": "west first exit"},
+        {"id": "301",  "source": "305",  "target": "300", "comment": "west last exit"},
+        {"id": "302",  "source": "301",  "target": "302"},
+        {"id": "303",  "source": "302",  "target": "303"},
+        {"id": "304",  "source": "303",  "target": "306"},
+        {"id": "305",  "source": "302",  "target": "307"},
+
+        {"id": "0r1",  "source": "007",  "target": "104", "center": [  7.5,  7.5], "clockwise": true,  "comment": "south to east"},
+        {"id": "0s2",  "source": "007",  "target": "204",                                              "comment": "south to north"},
+        {"id": "0l3",  "source": "006",  "target": "305", "center": [-10.5,  7.5], "clockwise": false, "comment": "south to west"},
+
+        {"id": "1r2",  "source": "107",  "target": "204", "center": [  7.5, -7.5], "clockwise": true,  "comment": "east to north"},
+        {"id": "1s3",  "source": "107",  "target": "304",                                              "comment": "east to west"},
+        {"id": "1l0",  "source": "106",  "target": "005", "center": [  7.5, 10.5], "clockwise": false, "comment": "east to south"},
+
+        {"id": "2r3",  "source": "207",  "target": "304", "center": [ -7.5, -7.5], "clockwise": true,  "comment": "north to west"},
+        {"id": "2s0",  "source": "207",  "target": "004",                                              "comment": "north to south"},
+        {"id": "2l1",  "source": "206",  "target": "105", "center": [ 10.5, -7.5], "clockwise": false, "comment": "north to east"},
+
+        {"id": "3r0",  "source": "307",  "target": "004", "center": [ -7.5,  7.5], "clockwise": true,  "comment": "west to south"},
+        {"id": "3s1",  "source": "307",  "target": "104",                                              "comment": "west to east"},
+        {"id": "3l2",  "source": "306",  "target": "205", "center": [ -7.5,-10.5], "clockwise": false, "comment": "west to north"}
+
+    ],
+  
+    "routes": [
+        {"id": "0r1", "source": "002", "intermediate": ["005", "0r1", "100"], "target": "101", "comment": "south to east"},
+        {"id": "0s2", "source": "002", "intermediate": ["005", "0s2", "200"], "target": "201", "comment": "south to north"},
+        {"id": "0l3", "source": "002", "intermediate": ["003", "004", "0l3"], "target": "301", "comment": "south to west"},
+
+        {"id": "1r2", "source": "102", "intermediate": ["105", "1r2", "200"], "target": "201", "comment": "east to north"},
+        {"id": "1s3", "source": "102", "intermediate": ["105", "1s3", "300"], "target": "301", "comment": "east to west"},
+        {"id": "1l0", "source": "102", "intermediate": ["103", "104", "1l0"], "target": "001", "comment": "east to south"},
+
+        {"id": "2r3", "source": "202", "intermediate": ["205", "2r3", "300"], "target": "301", "comment": "north to west"},
+        {"id": "2s0", "source": "202", "intermediate": ["205", "2s0", "000"], "target": "001", "comment": "north to south"},
+        {"id": "2l1", "source": "202", "intermediate": ["203", "204", "2l1"], "target": "101", "comment": "north to east"},
+
+        {"id": "3r0", "source": "302", "intermediate": ["305", "3r0", "000"], "target": "001", "comment": "west to south"},
+        {"id": "3s1", "source": "302", "intermediate": ["305", "3s1", "100"], "target": "101", "comment": "west to east"},
+        {"id": "3l2", "source": "302", "intermediate": ["303", "304", "3l2"], "target": "201", "comment": "west to north"}
+    ],
+
+    "traffic_lights": [
+        {
+          "id": "eglington",
+          "node_positions": [],
+          "cycle": [["green", 4], ["yellow", 1], ["red", 1], ["red", 5], ["red", 1]]
+        }
+      ],
+  
+    "manager": {
+      "position": [0, 0],
+      "radius": 50
+    }
+  }

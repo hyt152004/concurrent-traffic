@@ -112,17 +112,24 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
         
         if leading_vehicle:
             final_velocity = leading_vehicle.velocity
-            distance_to_leading = abs(vehicle.route_position - leading_vehicle.route_position) 
+            distance = abs(vehicle.route_position - leading_vehicle.route_position) 
 
             # ALL VEHICLES MUST BE PLACED 10m AWAY FROM EACH OTHER AT THE START
-            safety_distance = 9
-            distance = distance_to_leading - safety_distance
+            
+            # we want to stop the car "Safety Distance" away from leading car
+            safety_distance = 6
+            emergency_distance = 5
+
             # this prevents division of negative and 0
-            if distance <= 0:
+            if distance < emergency_distance:
                 vehicle.velocity = 0
-                print("Invalid Implement Command Regarding Safety Distance")
+                print("Invalid Implement Command Regarding Emergency Distance")
                 continue
-            required_deceleration = (final_velocity**2 - initial_velocity**2) / (2 * distance)
+            elif distance == safety_distance:
+                required_deceleration = 0
+            else:
+                # required deceleration to stop car at fake distance away
+                required_deceleration = (final_velocity**2 - initial_velocity**2) / (2 * (distance - safety_distance))
             
             new_t = np.array([cur_time, cur_time + 0.1])
             new_a = np.array([required_deceleration, leading_vehicle.acceleration])
@@ -142,34 +149,42 @@ MIN_LEADING_DIST = 30
 
 def update_driver_lead(vehicles: list) -> None:
 
-    max_angle_diff = 80
-    for i, tv in enumerate(vehicles):
-        curr_lv = tv.leading_vehicle
-        curr_lv_wp = route_position_to_world_position(curr_lv.route, curr_lv.route_position) if curr_lv else None
-        tv_wp = route_position_to_world_position(tv.route, tv.route_position)
-        distance_curr_lv = np.linalg.norm(curr_lv_wp - tv_wp) if curr_lv else None
+    max_angle_diff = 20
+    for i, trailing_v in enumerate(vehicles):
+        cur_leading_v = trailing_v.leading_vehicle
+        cur_leading_v_wp = route_position_to_world_position(cur_leading_v.route, cur_leading_v.route_position) if cur_leading_v else None
+        trailing_v_wp = route_position_to_world_position(trailing_v.route, trailing_v.route_position)
+        cur_leading_v_dist = np.linalg.norm(cur_leading_v_wp - trailing_v_wp) if cur_leading_v else None
 
-        for j, potential_lv in enumerate(vehicles):
+        for j, potential_leading_v in enumerate(vehicles):
             if i == j:  # Avoid comparing the vehicle with itself
                 continue
 
-            if tv.route_position > potential_lv.route_position:
+            if trailing_v.route_position > potential_leading_v.route_position:
                 continue
-
-            if abs(tv.direction_angle - potential_lv.direction_angle) > max_angle_diff:
-                continue
-
-            potential_lv_wp = route_position_to_world_position(potential_lv.route, potential_lv.route_position)
-            distance_potential_lv = np.linalg.norm(potential_lv_wp - tv_wp)
             
-            if distance_curr_lv is None or distance_potential_lv < distance_curr_lv:
-                curr_lv = potential_lv
-                distance_curr_lv = distance_potential_lv
+            if abs(trailing_v.direction_angle - potential_leading_v.direction_angle) > max_angle_diff:
+                continue
 
-        # if this is the last iteration, and the vehicle is greater than 30 meters,
+            potential_leading_v_wp = route_position_to_world_position(potential_leading_v.route, potential_leading_v.route_position)
+            potential_leading_v_dist = np.linalg.norm(potential_leading_v_wp - trailing_v_wp)
+            
+            if cur_leading_v_dist is None or potential_leading_v_dist < cur_leading_v_dist:
+                cur_leading_v = potential_leading_v
+                cur_leading_v_dist = potential_leading_v_dist
+
+        # if this is the last iteration, and the vehicle is greater than 30 meters, or the leading vehicle
+        # has an angle larger than the max angle difference,
         # the leading vehicle will be set to None, regardless of closer cars
         # This issue is resolved
-        if distance_curr_lv is None or distance_curr_lv > MIN_LEADING_DIST:
-            tv.leading_vehicle = None
+
+        if cur_leading_v is None:
+            trailing_v.leading_vehicle = None
+            continue
+
+        is_not_within_angle_scope = abs(trailing_v.direction_angle - cur_leading_v.direction_angle) > max_angle_diff
+
+        if cur_leading_v_dist > MIN_LEADING_DIST or is_not_within_angle_scope:
+            trailing_v.leading_vehicle = None
         else:
-            tv.leading_vehicle = curr_lv
+            trailing_v.leading_vehicle = cur_leading_v

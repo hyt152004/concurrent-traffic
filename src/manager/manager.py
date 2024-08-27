@@ -80,7 +80,7 @@ def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle], elap
     return new_vehicle
 
 def get_collision(manager: Manager, cur_time: float) -> Collision | None:
-    """Return list of Collisions between Vehicles in manager's radius."""
+    """Return Collision between two Vehicles in manager's radius. Return None if there are no Collisions."""
     vehicle_pairs = combinations(manager.vehicles, 2)
     
     for vehicle_pair in vehicle_pairs:
@@ -266,7 +266,7 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
             collision = get_collisions_between_two_vehicles(collision.vehicle0, collision.vehicle1, elapsed_time)
 
         manager.logger.info(f"{elapsed_time} - Command sent to {cur_vehicle.name}({cur_vehicle.id}) | T: {t}, A: {a}")
-        collision = get_collisions(manager, elapsed_time)
+        collision = get_collision(manager, elapsed_time)
 
 
 def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> list[Collision]:

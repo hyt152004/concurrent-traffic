@@ -29,19 +29,12 @@
     {"id": "route_1", "source": "edge_3", "intermediate": ["edge_4"], "target": "edge_5"}
   ],
 
-  "traffic_master_intersections": [
-    {
-      "cycle": {"green": 5, "yellow": 2, "red": 7},
-      "upcycle": "eglington",
-      "downcycle": "towncentre"
-    }
-  ],
-
   "traffic_lights": [
-    {"id": "eglington", "node_position": "node_9"},
-    {"id": "eglington", "node_position": "node_13"},
-    {"id": "towncentre", "node_position": "node_15"},
-    {"id": "towncentre", "node_position": "node_11"}
+    {
+      "id": "eglington",
+      "node_positions": [],
+      "cycle": [["green", 4], ["yellow", 1], ["red", 1], ["red", 5], ["red", 1]]
+    }
   ],
 
   "manager": {

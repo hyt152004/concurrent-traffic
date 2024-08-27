@@ -241,8 +241,3 @@ def render_title(screen) -> None:
     FONT = pygame.font.Font("assets/fonts/DMSans-Black.ttf", 16)
     version_surface = FONT.render(f"- v0.0.2", True, (255, 255, 255))
     screen.blit(version_surface, (235,screen.get_height()-TOOLBAR_HEIGHT+11))
-
-#     FONT = pygame.font.SysFont("Segoe UI", 15, bold=True, italic=False)
-#     text_surface = FONT.render(f"Concurent Traffic v0.0.2", True, (255, 255, 255))
-#     screen.blit(text_surface, (6,screen.get_height()-TOOLBAR_HEIGHT+6))
-

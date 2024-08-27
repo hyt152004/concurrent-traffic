@@ -266,8 +266,7 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
             attempts_to_deter_collision += 1
             collision = get_collisions_between_two_vehicles(collision.vehicle0, collision.vehicle1, elapsed_time)
 
-        print(f"detered collision on {attempts_to_deter_collision} attempt, proposed acc_dur: {proposed_acceleration_duration}")
-        manager.logger.info(f"{elapsed_time} - Command sent to {lower_priority_vehicle.name}({lower_priority_vehicle.id}) | T: {t}, A: {a}")
+        manager.logger.info(f"{elapsed_time} - Command sent to {cur_vehicle.name}({cur_vehicle.id}) | T: {t}, A: {a}")
         collision = get_collisions(manager, elapsed_time)
 
 

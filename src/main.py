@@ -49,6 +49,7 @@ def main() -> None:
     intersection_points = get_intersections(routes)
     run_simulation(vehicles, nodes, curr_edges, routes, intersection_points, manager, traffic_master)
 
+
 def load_preset(file_path: str) -> tuple[Manager, TrafficMaster, list[Node], list[Edge], list[Route], list[Vehicle]]:
     with open(file_path, 'r') as file:
         presets = json.load(file)

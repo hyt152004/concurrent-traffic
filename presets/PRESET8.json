@@ -1,12 +1,26 @@
 {
   "stored_vehicles": [
-    {"id": "vehicle_0", "name": "Corolla", "route": "route_0", "route_position": 30, "velocity": 20},
-    {"id": "vehicle_1", "name": "Camry", "route": "route_0", "route_position": 20, "velocity": 20},
-    {"id": "vehicle_2", "name": "Civic", "route": "route_10", "route_position": 30, "velocity": 20},
-    {"id": "vehicle_3", "name": "RAV4", "route": "route_5", "route_position": 40, "velocity": 20},
-    {"id": "vehicle_4", "name": "Q3", "route": "route_8", "route_position": 18, "velocity": 20},
-    {"id": "vehicle_6", "name": "Accord", "route": "route_9", "route_position": 15, "velocity": 20},
-    {"id": "vehicle_7", "name": "Highlander", "route": "route_6", "route_position": 27, "velocity": 20}
+    {"id": "vehicle_1", "name": "Camry", "route": "route_0", "route_position": 30, "velocity": 20},
+    {"id": "vehicle_4", "name": "Q3", "route": "route_8", "route_position": 36, "velocity": 20},
+    {"id": "vehicle_6", "name": "Accord", "route": "route_9", "route_position": 30, "velocity": 20},
+    {"id": "vehicle_7", "name": "Highlander", "route": "route_6", "route_position": 54, "velocity": 20},
+    {"id": "vehicle_8", "name": "Bugatti", "route": "route_3", "route_position": 15, "velocity": 20},
+    {"id": "vehicle_9", "name": "Ferrari", "route": "route_4", "route_position": 30, "velocity": 20},
+    {"id": "vehicle_10", "name": "Tesla Model 3", "route": "route_7", "route_position": 10, "velocity": 20},
+    {"id": "vehicle_11", "name": "Elantra", "route": "route_10", "route_position": 0, "velocity": 20},
+    {"id": "vehicle_12", "name": "Porsche 911", "route": "route_0", "route_position": 15, "velocity": 20},
+    {"id": "vehicle_13", "name": "Camaro", "route": "route_1", "route_position": 0, "velocity": 20},
+    {"id": "vehicle_14", "name": "Reventon", "route": "route_4", "route_position": 0, "velocity": 20},
+    {"id": "vehicle_00", "name": "Corolla", "route": "route_0", "route_position": -20, "velocity": 20},
+    {"id": "vehicle_01", "name": "Camry", "route": "route_0", "route_position": -50, "velocity": 20},
+    {"id": "vehicle_02", "name": "Civic", "route": "route_10", "route_position": -20, "velocity": 20},
+    {"id": "vehicle_03", "name": "RAV4", "route": "route_5", "route_position": -90, "velocity": 20},
+    {"id": "vehicle_04", "name": "Q3", "route": "route_8", "route_position": -44, "velocity": 20},
+    {"id": "vehicle_06", "name": "Accord", "route": "route_9", "route_position": -50, "velocity": 20},
+    {"id": "vehicle_07", "name": "Highlander", "route": "route_6", "route_position": -26, "velocity": 20},
+    {"id": "vehicle_08", "name": "Bugatti", "route": "route_3", "route_position": -64, "velocity": 20},
+    {"id": "vehicle_09", "name": "Ferrari", "route": "route_4", "route_position": -50, "velocity": 20},
+    {"id": "vehicle_010", "name": "Tesla Model 3", "route": "route_7", "route_position": -70, "velocity": 20}
   ],
 
   "nodes": [
@@ -79,19 +93,6 @@
     {"id": "route_9", "source": "edge_7", "intermediate": [ "edge_18"], "target": "edge_0", "comment": "right from west"},
     {"id": "route_10", "source": "edge_7", "intermediate": [ "edge_17"], "target": "edge_2", "comment": "straight from west"},
     {"id": "route_11", "source": "edge_7", "intermediate": [ "edge_19"], "target": "edge_4", "comment": "left from west"}
-  ],
-
-  "traffic_lights": [
-    {
-      "id": "eglington",
-      "node_positions": ["node_9", "node_13"],
-      "cycle": [["green", 4], ["yellow", 1], ["red", 1], ["red", 5], ["red", 1]]
-    },
-    {
-      "id": "towncentre",
-      "node_positions": ["node_15", "node_11"],
-      "cycle": [["red", 5], ["red", 1], ["green", 4], ["yellow", 1], ["red", 1]]
-    }
   ],
 
   "manager": {

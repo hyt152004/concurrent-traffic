@@ -3,7 +3,6 @@ from classes.vehicle import Vehicle, update_cmd
 from classes.route import Route, route_position_to_world_position
 from itertools import combinations
 from scipy.optimize import minimize_scalar
-from random import randint
 import logging
 
 CAR_COLLISION_DISTANCE = 3 # meters
@@ -121,8 +120,8 @@ def get_collisions(manager: Manager, cur_time: float) -> list[Collision]:
                 # print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
                 # print(f"{vehicle_pair[0].name}: {route_position_to_world_position(vehicle_pair[0].route, route_position_at_delta_time(vehicle_pair[0], result.x, cur_time))}")
                 # print(f"{vehicle_pair[1].name}: {route_position_to_world_position(vehicle_pair[1].route, route_position_at_delta_time(vehicle_pair[1], result.x, cur_time))}")
-                delta0 = vehicle_pair[0].route.total_length - route_position_at_delta_time(vehicle_pair[0], time_of_collision - cur_time, cur_time)
-                delta1 = vehicle_pair[1].route.total_length - route_position_at_delta_time(vehicle_pair[1], time_of_collision - cur_time, cur_time)
+                delta0 = vehicle_pair[0].route.total_length - route_pos_at_delta_time(vehicle_pair[0], time_of_collision - cur_time, cur_time)
+                delta1 = vehicle_pair[1].route.total_length - route_pos_at_delta_time(vehicle_pair[1], time_of_collision - cur_time, cur_time)
                 collisions.append(Collision(vehicle_pair[0], vehicle_pair[1], time_of_collision))
                 manager.logger.info(f"{cur_time} - Collision predicted between {vehicle_pair[0].name}({vehicle_pair[0].id}) and {vehicle_pair[1].name}({vehicle_pair[1].id}) at time {time_of_collision}")
     return collisions

@@ -26,7 +26,7 @@ def render_nodes(screen: Surface, nodes: list[Node]) -> None:
     """Render function for Nodes."""
     for node in nodes:
         node_position = world_to_screen_vector(screen, node.position, zoom_factor)
-        pygame.draw.circle(screen, "red", node_position, 3)
+        pygame.draw.circle(screen, "blue", node_position, 3)
 
 def render_edges(screen: Surface, edges: list[Edge]) -> None:
     """Render function for Edges."""
@@ -34,7 +34,7 @@ def render_edges(screen: Surface, edges: list[Edge]) -> None:
         if isinstance(edge, StraightEdge):
             start_position = world_to_screen_vector(screen, edge.start.position, zoom_factor)
             end_position   = world_to_screen_vector(screen, edge.end.position, zoom_factor)
-            pygame.draw.line(screen, "red", start_position, end_position)
+            pygame.draw.line(screen, "blue", start_position, end_position)
         elif isinstance(edge, CircularEdge):
             # define rect
             radius = world_to_screen_scalar(screen, np.linalg.norm(edge.start.position-edge.center), zoom_factor) # norm describes distance
@@ -53,13 +53,31 @@ def render_edges(screen: Surface, edges: list[Edge]) -> None:
                 if theta_start < theta_end:
                     theta_start += 2*np.pi
 
-            pygame.draw.arc(screen, "red", arc_rect, theta_start, theta_end)
+            pygame.draw.arc(screen, "blue", arc_rect, theta_start, theta_end)
 
 def render_intersections(screen: Surface, intersection_points) -> None:
     """Render function for intersecting Routes."""
     for intersection in intersection_points:
         node_position = world_to_screen_vector(screen, np.array(list(intersection[2])), zoom_factor)
         # pygame.draw.circle(screen, "blue", node_position, 3)
+
+def draw_safety_border_corner(screen: Surface, v_pos: np.ndarray, corner_vector: np.ndarray, v_angle: float):
+    x =  np.cos(np.deg2rad(v_angle)) * corner_vector[0] + np.sin(np.deg2rad(v_angle)) * corner_vector[1]
+    y = -np.sin(np.deg2rad(v_angle)) * corner_vector[0] + np.cos(np.deg2rad(v_angle)) * corner_vector[1]
+    pygame.draw.circle(screen, "green", (v_pos[0] + x, v_pos[1] + y), 3)
+
+def draw_safety_border(screen: Surface, v_pos: np.ndarray, v_width: float, v_length: float, v_angle: float):
+    safety_length = world_to_screen_scalar(screen, 3, zoom_factor)
+    safety_width = world_to_screen_scalar(screen, 0.2, zoom_factor)
+
+    left_top_corner_vector = [v_length/2 + safety_length, v_width/2 + safety_width]
+    right_top_corner_vector = [v_length/2 + safety_length, -(v_width/2 + safety_width)]
+    left_bot_corner_vector = [-(v_length/2 + safety_length), v_width/2 + safety_width]
+    right_bot_corner_vector = [-(v_length/2 + safety_length), -(v_width/2 + safety_width)]
+    draw_safety_border_corner(screen, v_pos, left_top_corner_vector, v_angle)
+    draw_safety_border_corner(screen, v_pos, right_top_corner_vector, v_angle)
+    draw_safety_border_corner(screen, v_pos, left_bot_corner_vector, v_angle)
+    draw_safety_border_corner(screen, v_pos, right_bot_corner_vector, v_angle)
 
 def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
     """Render function for Vehicles."""
@@ -97,8 +115,8 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
             car_rect.center = vehicle_center_screen_pos
             screen.blit(img, car_rect)
 
-        car_collision_screen_distance = world_to_screen_scalar(screen, CAR_COLLISION_DISTANCE/2, zoom_factor)
-        pygame.draw.circle(screen, "red", vehicle_center_screen_pos, car_collision_screen_distance, 1)
+        draw_safety_border(screen, vehicle_center_screen_pos, vehicle_screen_width, vehicle_screen_length, vehicle_angle)
+
         vehicle_text_font = pygame.font.SysFont('Consolas', 12)
         text_surface = vehicle_text_font.render(vehicle.name, True, (139, 69, 19))
         screen.blit(text_surface, (car_rect.center[0]-(vehicle_text_font.size(vehicle.name)[0])/2, car_rect.center[1]-vehicle_screen_length))
@@ -224,8 +242,8 @@ def render_arrows(screen: Surface, edges: list[Edge]):
         negative_screen_vector = world_to_screen_vector(screen, negative_vector, zoom_factor)
         
         # draws onto screen
-        pygame.draw.aaline(screen, "red", midpoint_position, positive_screen_vector, blend=40)
-        pygame.draw.aaline(screen, "red", midpoint_position, negative_screen_vector, blend=40)
+        pygame.draw.aaline(screen, "blue", midpoint_position, positive_screen_vector, blend=40)
+        pygame.draw.aaline(screen, "blue", midpoint_position, negative_screen_vector, blend=40)
 
 def render_toolbar(screen: Surface, time_elapsed, buttons: list[Button]) -> None:
     """Render function for toolbar."""

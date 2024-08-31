@@ -74,9 +74,9 @@ def draw_safety_border(screen: Surface, v_pos: np.ndarray, v_width: float, v_len
     # right_top_corner_vector = [v_length/2 + safety_length, -(v_width/2 + safety_width)]
     left_bot_corner_vector = [-(v_length/2 + safety_length), 0]
     # right_bot_corner_vector = [-(v_length/2 + safety_length), -(v_width/2 + safety_width)]
-    # draw_safety_border_corner(screen, v_pos, left_top_corner_vector, v_angle)
+    draw_safety_border_corner(screen, v_pos, left_top_corner_vector, v_angle)
     # draw_safety_border_corner(screen, v_pos, right_top_corner_vector, v_angle)
-    # draw_safety_border_corner(screen, v_pos, left_bot_corner_vector, v_angle)
+    draw_safety_border_corner(screen, v_pos, left_bot_corner_vector, v_angle)
     # draw_safety_border_corner(screen, v_pos, right_bot_corner_vector, v_angle)
     
 

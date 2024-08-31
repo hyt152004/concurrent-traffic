@@ -67,17 +67,18 @@ def draw_safety_border_corner(screen: Surface, v_pos: np.ndarray, corner_vector:
     pygame.draw.circle(screen, "green", (v_pos[0] + x, v_pos[1] + y), 3)
 
 def draw_safety_border(screen: Surface, v_pos: np.ndarray, v_width: float, v_length: float, v_angle: float):
-    safety_length = world_to_screen_scalar(screen, 3, zoom_factor)
-    safety_width = world_to_screen_scalar(screen, 0.2, zoom_factor)
+    safety_length = 0
+    safety_width = 0
 
-    left_top_corner_vector = [v_length/2 + safety_length, v_width/2 + safety_width]
-    right_top_corner_vector = [v_length/2 + safety_length, -(v_width/2 + safety_width)]
-    left_bot_corner_vector = [-(v_length/2 + safety_length), v_width/2 + safety_width]
-    right_bot_corner_vector = [-(v_length/2 + safety_length), -(v_width/2 + safety_width)]
-    draw_safety_border_corner(screen, v_pos, left_top_corner_vector, v_angle)
-    draw_safety_border_corner(screen, v_pos, right_top_corner_vector, v_angle)
-    draw_safety_border_corner(screen, v_pos, left_bot_corner_vector, v_angle)
-    draw_safety_border_corner(screen, v_pos, right_bot_corner_vector, v_angle)
+    left_top_corner_vector = [v_length/2 + safety_length, 0]
+    # right_top_corner_vector = [v_length/2 + safety_length, -(v_width/2 + safety_width)]
+    left_bot_corner_vector = [-(v_length/2 + safety_length), 0]
+    # right_bot_corner_vector = [-(v_length/2 + safety_length), -(v_width/2 + safety_width)]
+    # draw_safety_border_corner(screen, v_pos, left_top_corner_vector, v_angle)
+    # draw_safety_border_corner(screen, v_pos, right_top_corner_vector, v_angle)
+    # draw_safety_border_corner(screen, v_pos, left_bot_corner_vector, v_angle)
+    # draw_safety_border_corner(screen, v_pos, right_bot_corner_vector, v_angle)
+    
 
 def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
     """Render function for Vehicles."""

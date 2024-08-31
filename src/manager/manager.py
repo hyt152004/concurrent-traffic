@@ -1,14 +1,19 @@
 import numpy as np
 from classes.vehicle import Vehicle, update_cmd
-from classes.route import Route, route_position_to_world_position
+from classes.route import Route, route_position_to_world_position, direction_at_route_position
 from itertools import combinations
 from scipy.optimize import minimize_scalar
 import logging
 
-CAR_COLLISION_DISTANCE = 3 # meters
+CAR_COLLISION_DISTANCE = 2.5 # meters
 MINIMUM_CRUISING_SPEED = 0
 DESIRED_CRUISING_SPEED = 20
 MAX_ACCELERATION = 3.5
+
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
+colorama_init()
 
 class Collision:
     """A Collision represents a collision between two Vehicles at a given time."""
@@ -79,67 +84,70 @@ def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle], elap
             manager.vehicles.remove(vehicle)
     return new_vehicle
 
+def corner_vector_to_pos(v_pos: np.ndarray, v_angle: float, vector: np.ndarray):
+    x =  np.cos(np.deg2rad(v_angle)) * vector[0] + np.sin(np.deg2rad(v_angle)) * vector[1]
+    y = -np.sin(np.deg2rad(v_angle)) * vector[0] + np.cos(np.deg2rad(v_angle)) * vector[1]
+    return np.array([v_pos[0] + x, v_pos[1] + y])
+
 def get_collision(manager: Manager, cur_time: float) -> Collision | None:
     """Return Collision between two Vehicles in manager's radius. Return None if there are no Collisions."""
     vehicle_pairs = combinations(manager.vehicles, 2)
     
     for vehicle_pair in vehicle_pairs:
-        vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle_pair[0], cur_time), time_until_end_of_route(vehicle_pair[1], cur_time)))
-        def distance_objective(t):
-            wp0 = route_position_to_world_position(vehicle_pair[0].route, route_pos_at_delta_time(vehicle_pair[0], t, cur_time))
-            wp1 = route_position_to_world_position(vehicle_pair[1].route, route_pos_at_delta_time(vehicle_pair[1], t, cur_time))
-            if wp0 is None or wp1 is None:
-                return np.inf
-            return np.linalg.norm(wp1-wp0)
-        
-        result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
-        if result.success:
-            time_of_collision = result.x + cur_time
-            if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
-                return Collision(vehicle_pair[0], vehicle_pair[1], time_of_collision)
+        collision = get_collisions_between_two_vehicles(vehicle_pair[0], vehicle_pair[1], cur_time)
+        if collision is not None:
+            return collision
     return None
-
-def get_collisions(manager: Manager, cur_time: float) -> list[Collision]:
-    """Return list of Collisions between Vehicles in manager's radius."""
-    collisions = []
-    vehicle_pairs = combinations(manager.vehicles, 2)
-    
-    for vehicle_pair in vehicle_pairs:
-        vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle_pair[0], cur_time), time_until_end_of_route(vehicle_pair[1], cur_time)))
-        def distance_objective(t):
-            wp0 = route_position_to_world_position(vehicle_pair[0].route, route_pos_at_delta_time(vehicle_pair[0], t, cur_time))
-            wp1 = route_position_to_world_position(vehicle_pair[1].route, route_pos_at_delta_time(vehicle_pair[1], t, cur_time))
-            if wp0 is None or wp1 is None:
-                return np.inf
-            return np.linalg.norm(wp1-wp0)
-        
-        result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
-        if result.success:
-            time_of_collision = result.x + cur_time
-            if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
-                # print(f"The objects come within 2.5 meters of each other at t = {time_of_collision}")
-                # print(f"{vehicle_pair[0].name}: {route_position_to_world_position(vehicle_pair[0].route, route_position_at_delta_time(vehicle_pair[0], result.x, cur_time))}")
-                # print(f"{vehicle_pair[1].name}: {route_position_to_world_position(vehicle_pair[1].route, route_position_at_delta_time(vehicle_pair[1], result.x, cur_time))}")
-                delta0 = vehicle_pair[0].route.total_length - route_pos_at_delta_time(vehicle_pair[0], time_of_collision - cur_time, cur_time)
-                delta1 = vehicle_pair[1].route.total_length - route_pos_at_delta_time(vehicle_pair[1], time_of_collision - cur_time, cur_time)
-                collisions.append(Collision(vehicle_pair[0], vehicle_pair[1], time_of_collision))
-                manager.logger.info(f"{cur_time} - Collision predicted between {vehicle_pair[0].name}({vehicle_pair[0].id}) and {vehicle_pair[1].name}({vehicle_pair[1].id}) at time {time_of_collision}")
-    return collisions
 
 def get_collisions_between_two_vehicles(vehicle0: Vehicle, vehicle1: Vehicle, cur_time: float) -> Collision | None:
     vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle0, cur_time), time_until_end_of_route(vehicle1, cur_time)))
-    def distance_objective(t):
-            wp0 = route_position_to_world_position(vehicle0.route, route_pos_at_delta_time(vehicle0, t, cur_time))
-            wp1 = route_position_to_world_position(vehicle1.route, route_pos_at_delta_time(vehicle1, t, cur_time))
-            if wp0 is None or wp1 is None:
-                return np.inf
-            return np.linalg.norm(wp1-wp0)
-        
-    result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
-    if result.success:
-        time_of_collision = result.x + cur_time
-        if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
-            return Collision(vehicle0, vehicle1, time_of_collision)
+
+    v0_angle = vehicle0.direction_angle
+    v0_corner_vectors = []
+    v0_corner_vectors.append(np.array([vehicle0.length/2, 0]))
+    # v0_corner_vectors.append(np.array([vehicle0.length/2, -(vehicle0.width/2)]))
+    v0_corner_vectors.append(np.array([-vehicle0.length/2, 0]))
+    # v0_corner_vectors.append(np.array([-vehicle0.length/2, -(vehicle0.width/2)]))
+
+    v1_angle = vehicle1.direction_angle
+    v1_corner_vectors = []
+    v1_corner_vectors.append(np.array([vehicle1.length/2, 0]))
+    # v1_corner_vectors.append(np.array([vehicle1.length/2 + 3, -(vehicle1.width/2)]))
+    v1_corner_vectors.append(np.array([-vehicle1.length/2, 0]))
+    # v1_corner_vectors.append(np.array([-vehicle1.length/2, -(vehicle1.width/2)]))
+
+    for v0_corner_vector in v0_corner_vectors:
+        for v1_corner_vector in v1_corner_vectors:
+
+            def distance_objective(t):
+                rp0 = route_pos_at_delta_time(vehicle0, t, cur_time)
+                rp1 = route_pos_at_delta_time(vehicle1, t, cur_time)
+                wp0 = route_position_to_world_position(vehicle0.route, rp0)
+                wp1 = route_position_to_world_position(vehicle1.route, rp1)
+                if wp0 is None or wp1 is None:
+                    return np.inf
+                a0 = direction_at_route_position(vehicle0.route, rp0)
+                a1 = direction_at_route_position(vehicle1.route, rp1)
+                v0_corner_vector_pos = corner_vector_to_pos(wp0, a0, v0_corner_vector)
+                v1_corner_vector_pos = corner_vector_to_pos(wp1, a1, v1_corner_vector)
+                return np.linalg.norm(v1_corner_vector_pos-v0_corner_vector_pos)
+                
+            result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
+            if result.success:
+                time_of_collision = result.x + cur_time
+                if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
+                    rp0 = route_pos_at_delta_time(vehicle0, result.x, cur_time)
+                    rp1 = route_pos_at_delta_time(vehicle1, result.x, cur_time)
+                    wp0 = route_position_to_world_position(vehicle0.route, rp0)
+                    wp1 = route_position_to_world_position(vehicle1.route, rp1)
+                    a0 = direction_at_route_position(vehicle0.route, rp0)
+                    a1 = direction_at_route_position(vehicle1.route, rp1)
+                    v0_corner_vector_pos = corner_vector_to_pos(wp0, a0, v0_corner_vector)
+                    v1_corner_vector_pos = corner_vector_to_pos(wp1, a1, v1_corner_vector)
+                    print(f"distance was: {Fore.RED}{round(distance_objective(result.x), 2)}m{Style.RESET_ALL}")
+                    print(f"v0_corner_pos: ({Fore.YELLOW}{round(v0_corner_vector_pos[0], 2)}{Style.RESET_ALL},{Fore.YELLOW}{round(v0_corner_vector_pos[1], 2)}{Style.RESET_ALL})")
+                    print(f"v1_corner_pos: ({Fore.YELLOW}{round(v1_corner_vector_pos[0], 2)}{Style.RESET_ALL},{Fore.YELLOW}{round(v1_corner_vector_pos[1], 2)}{Style.RESET_ALL})")
+                    return Collision(vehicle0, vehicle1, time_of_collision)
     return None
     
 def route_pos_at_delta_time(vehicle: Vehicle, delta_time: float, cur_time: float) -> float:
@@ -195,7 +203,7 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
     """Compute and send commands."""
 
     updated_vehicles = set()
-    manager.vehicles.sort(key=lambda v: v.route_position, reverse=True)
+    # manager.vehicles.sort(key=lambda v: v.route_position, reverse=True)
     collision = get_collision(manager, elapsed_time)
 
     while collision != None:
@@ -209,7 +217,8 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
         vehicle0_index = manager.vehicles.index(collision.vehicle0)
         vehicle1_index = manager.vehicles.index(collision.vehicle1)
         cur_vehicle = collision.vehicle0 if vehicle0_index > vehicle1_index else collision.vehicle1
-        print(f"collision between {collision.vehicle0.name} and {collision.vehicle1.name} at {collision.time}")
+        print(f"attempting to resolve collision between {Fore.LIGHTBLUE_EX}{collision.vehicle0.name}{Style.RESET_ALL} and {Fore.LIGHTBLUE_EX}{collision.vehicle1.name}{Style.RESET_ALL} at {Fore.GREEN}{round(collision.time, 3)}s{Style.RESET_ALL}")
+        print(f"vehicle to modify: {cur_vehicle.name}")
 
         cur_vehicle_original_cmd = cur_vehicle.command
 
@@ -253,19 +262,31 @@ def _compute_and_send_acceleration_commands(manager: Manager, elapsed_time: floa
             updated_vehicles.add(cur_vehicle)
             route_pos_after_cmd = route_pos_at_delta_time(cur_vehicle, collision.time-elapsed_time, elapsed_time)
 
-            if route_pos_before_cmd == route_pos_after_cmd:
-                # our modifications to cmd is making no difference. Let's attempt to switch the priority of the vehicles
-                # reset what we've done:
-                cur_vehicle.command = cur_vehicle_original_cmd
-                updated_vehicles.remove(cur_vehicle)
+            if cur_vehicle == collision.vehicle0:
+                other_v = collision.vehicle1
+            else:
+                other_v = collision.vehicle0
+            print(f"time of collision: {Fore.GREEN}{round(collision.time, 3)}s{Style.RESET_ALL}")
+            world_pos_v0 = route_position_to_world_position(cur_vehicle.route, route_pos_after_cmd)
+            world_pos_v1 = route_position_to_world_position(other_v.route, route_pos_at_delta_time(other_v, collision.time-elapsed_time, elapsed_time))
+            # print(f"deceling duration: {Fore.GREEN}{round(deceling_duration, 3)}s{Style.RESET_ALL}")
+            # print(f"decelled duration: {Fore.GREEN}{round(deceled_duration, 3)}s{Style.RESET_ALL}")
+            print(f"position of {Fore.LIGHTBLUE_EX}{cur_vehicle.name}{Style.RESET_ALL}: ({Fore.YELLOW}{round(world_pos_v0[0], 2)}m, {round(world_pos_v0[1], 2)}m{Style.RESET_ALL})")
+            print(f"position of {Fore.LIGHTBLUE_EX}{other_v.name}{Style.RESET_ALL}: ({Fore.YELLOW}{round(world_pos_v1[0], 2)}m, {round(world_pos_v1[1], 2)}m{Style.RESET_ALL})")
 
-                # swap priority of vehicles
-                cur_vehicle = collision.vehicle1 if cur_vehicle == collision.vehicle0 else collision.vehicle0
+            # if route_pos_before_cmd == route_pos_after_cmd:
+            #     # our modifications to cmd is making no difference. Let's attempt to switch the priority of the vehicles
+            #     # reset what we've done:
+            #     cur_vehicle.command = cur_vehicle_original_cmd
+            #     updated_vehicles.remove(cur_vehicle)
+
+            #     # swap priority of vehicles
+            #     cur_vehicle = collision.vehicle1 if cur_vehicle == collision.vehicle0 else collision.vehicle0
 
             attempts_to_deter_collision += 1
             collision = get_collisions_between_two_vehicles(collision.vehicle0, collision.vehicle1, elapsed_time)
 
-        manager.logger.info(f"{elapsed_time} - Command sent to {cur_vehicle.name}({cur_vehicle.id}) | T: {t}, A: {a}")
+        manager.logger.info(f"{round(elapsed_time, 3)} - Command sent to {cur_vehicle.name}({cur_vehicle.id}) | T: {t}, A: {a}")
         collision = get_collision(manager, elapsed_time)
 
 

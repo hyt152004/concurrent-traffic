@@ -148,43 +148,42 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
 MIN_LEADING_DIST = 30
 
 def update_driver_lead(vehicles: list) -> None:
-    return
-    # max_angle_diff = 20
-    # for i, trailing_v in enumerate(vehicles):
-    #     cur_leading_v = trailing_v.leading_vehicle
-    #     cur_leading_v_wp = route_position_to_world_position(cur_leading_v.route, cur_leading_v.route_position) if cur_leading_v else None
-    #     trailing_v_wp = route_position_to_world_position(trailing_v.route, trailing_v.route_position)
-    #     cur_leading_v_dist = np.linalg.norm(cur_leading_v_wp - trailing_v_wp) if cur_leading_v else None
+    max_angle_diff = 20
+    for i, trailing_v in enumerate(vehicles):
+        cur_leading_v = trailing_v.leading_vehicle
+        cur_leading_v_wp = route_position_to_world_position(cur_leading_v.route, cur_leading_v.route_position) if cur_leading_v else None
+        trailing_v_wp = route_position_to_world_position(trailing_v.route, trailing_v.route_position)
+        cur_leading_v_dist = np.linalg.norm(cur_leading_v_wp - trailing_v_wp) if cur_leading_v else None
 
-    #     for j, potential_leading_v in enumerate(vehicles):
-    #         if i == j:  # Avoid comparing the vehicle with itself
-    #             continue
+        for j, potential_leading_v in enumerate(vehicles):
+            if i == j:  # Avoid comparing the vehicle with itself
+                continue
 
-    #         if trailing_v.route_position > potential_leading_v.route_position:
-    #             continue
+            if trailing_v.route_position > potential_leading_v.route_position:
+                continue
             
-    #         if abs(trailing_v.direction_angle - potential_leading_v.direction_angle) > max_angle_diff:
-    #             continue
+            if abs(trailing_v.direction_angle - potential_leading_v.direction_angle) > max_angle_diff:
+                continue
 
-    #         potential_leading_v_wp = route_position_to_world_position(potential_leading_v.route, potential_leading_v.route_position)
-    #         potential_leading_v_dist = np.linalg.norm(potential_leading_v_wp - trailing_v_wp)
+            potential_leading_v_wp = route_position_to_world_position(potential_leading_v.route, potential_leading_v.route_position)
+            potential_leading_v_dist = np.linalg.norm(potential_leading_v_wp - trailing_v_wp)
             
-    #         if cur_leading_v_dist is None or potential_leading_v_dist < cur_leading_v_dist:
-    #             cur_leading_v = potential_leading_v
-    #             cur_leading_v_dist = potential_leading_v_dist
+            if cur_leading_v_dist is None or potential_leading_v_dist < cur_leading_v_dist:
+                cur_leading_v = potential_leading_v
+                cur_leading_v_dist = potential_leading_v_dist
 
-    #     # if this is the last iteration, and the vehicle is greater than 30 meters, or the leading vehicle
-    #     # has an angle larger than the max angle difference,
-    #     # the leading vehicle will be set to None, regardless of closer cars
-    #     # This issue is resolved
+        # if this is the last iteration, and the vehicle is greater than 30 meters, or the leading vehicle
+        # has an angle larger than the max angle difference,
+        # the leading vehicle will be set to None, regardless of closer cars
+        # This issue is resolved
 
-    #     if cur_leading_v is None:
-    #         trailing_v.leading_vehicle = None
-    #         continue
+        if cur_leading_v is None:
+            trailing_v.leading_vehicle = None
+            continue
 
-    #     is_not_within_angle_scope = abs(trailing_v.direction_angle - cur_leading_v.direction_angle) > max_angle_diff
+        is_not_within_angle_scope = abs(trailing_v.direction_angle - cur_leading_v.direction_angle) > max_angle_diff
 
-    #     if cur_leading_v_dist > MIN_LEADING_DIST or is_not_within_angle_scope:
-    #         trailing_v.leading_vehicle = None
-    #     else:
-    #         trailing_v.leading_vehicle = cur_leading_v
+        if cur_leading_v_dist > MIN_LEADING_DIST or is_not_within_angle_scope:
+            trailing_v.leading_vehicle = None
+        else:
+            trailing_v.leading_vehicle = cur_leading_v

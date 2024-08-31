@@ -67,8 +67,8 @@ def toggle_playback_speed(settings: dict, operation: str) -> None:
         settings["playback_speed_factor"] = min(MAX_PLAYBACK_SPEED_FACTOR, settings["playback_speed_factor"] * 2)
     elif operation == "-":
         settings["playback_speed_factor"] = max(MIN_PLAYBACK_SPEED_FACTOR, settings["playback_speed_factor"] / 2)
-    settings["display_speed_factor"] = str(settings["playback_speed_factor"]) + "x"
+    settings["display_playback_speed"] = str(settings["playback_speed_factor"]) + "x"
     
-def toggle_algorithm_selector(settings: dict, algorithm: str) -> None:
+def toggle_algorithm_selector(settings: dict, simulation_values: dict, algorithm: str) -> None:
     settings["selected_algorithm"] = algorithm
-    restart_func()
+    restart_func(simulation_values, simulation_values["initial_vehicles"])

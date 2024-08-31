@@ -33,14 +33,12 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
     pygame.init()
     screen = pygame.display.set_mode((ORIGINAL_SCREEN_WIDTH, ORIGINAL_SCREEN_HEIGHT), pygame.RESIZABLE)
     running = True
-    time_elapsed = 0
-    vehicles = vehicle_copy(initial_vehicles)
 
     settings = {
         "zoom_factor": 1,
         "playback_speed_factor": 1.0,
         "route_visible": True,
-        "selected_algorithm_button": None,
+        "selected_algorithm": "v0",
         "display_playback_speed": "1.0x"
     }
 
@@ -49,23 +47,26 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         "delta_time": 0,
         "time_elapsed": 0,
         "vehicles": vehicle_copy(initial_vehicles),
+        "initial_vehicles": initial_vehicles,
         "traffic_master": traffic_master,
         "manager": manager,
         "clock": pygame.time.Clock()
     }
     
+    not_selected_color = (40, 40, 40)
+    selected_color = (255, 50, 50)
 
-    toggle_button = Button((40, 40, 40), (255, 50, 50), (5, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'toggle update', toggle_update, simulation_values)
-    restart_button = Button((40, 40, 40), (255, 50, 50), (110, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'restart', restart_func, (simulation_values, initial_vehicles))
-    routes_visibility_button = Button((40, 40, 40), (255, 50, 50), (215, screen.get_height()-TOOLBAR_HEIGHT+50), (150, 30), 'toggle route visibility', toggle_route_visibility, settings)
-    zoom_button = Button((40, 40, 40), (255, 50, 50), (370, screen.get_height()-TOOLBAR_HEIGHT+50), (70, 30), 'zoom', toggle_zoom, settings)
+    toggle_button = Button(not_selected_color, selected_color, (5, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'toggle update', toggle_update, simulation_values)
+    restart_button = Button(not_selected_color, selected_color, (110, screen.get_height()-TOOLBAR_HEIGHT+50), (100, 30), 'restart', restart_func, (simulation_values, initial_vehicles))
+    routes_visibility_button = Button(not_selected_color, selected_color, (215, screen.get_height()-TOOLBAR_HEIGHT+50), (150, 30), 'toggle route visibility', toggle_route_visibility, settings)
+    zoom_button = Button(not_selected_color, selected_color, (370, screen.get_height()-TOOLBAR_HEIGHT+50), (70, 30), 'zoom', toggle_zoom, settings)
 
-    subtract_playback_speed = Button((40, 40, 40), (255, 50, 50), (445, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '-', toggle_playback_speed, (settings, "-"))
-    display_playback_speed = Button((40, 40, 40), (40, 40, 40), (480, screen.get_height()-TOOLBAR_HEIGHT+50), (45, 30), settings["display_playback_speed"])
-    add_playback_speed = Button((40, 40, 40), (255, 50, 50), (525, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '+', toggle_playback_speed, (settings, "+"))
+    subtract_playback_speed = Button(not_selected_color, selected_color, (445, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '-', toggle_playback_speed, (settings, "-"))
+    display_playback_speed = Button(not_selected_color, not_selected_color, (480, screen.get_height()-TOOLBAR_HEIGHT+50), (45, 30), settings["display_playback_speed"])
+    add_playback_speed = Button(not_selected_color, selected_color, (525, screen.get_height()-TOOLBAR_HEIGHT+50), (35, 30), '+', toggle_playback_speed, (settings, "+"))
     
-    algorithm_selector_v0 = Button((40, 40, 40), (255, 50, 50), (565, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'ALG 0', toggle_algorithm_selector, (settings, "v0"))
-    algorithm_selector_standard_traffic = Button((255, 50, 50), (255, 50, 50), (700, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'Standard Traffic', toggle_algorithm_selector, (settings, "traffic"))
+    algorithm_selector_v0 = Button(not_selected_color, selected_color, (565, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'ALG 0', toggle_algorithm_selector, (settings, simulation_values, "v0"))
+    algorithm_selector_standard_traffic = Button(not_selected_color, selected_color, (700, screen.get_height()-TOOLBAR_HEIGHT+50), (135, 30), 'Standard Traffic', toggle_algorithm_selector, (settings, simulation_values, "traffic"))
 
     buttons = [toggle_button, restart_button, routes_visibility_button, zoom_button, subtract_playback_speed, add_playback_speed, display_playback_speed, algorithm_selector_v0, algorithm_selector_standard_traffic]
 
@@ -94,15 +95,19 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         render_title(screen)
 
         # manager 'cpu' or standard traffic 
-        if settings["selected_algorithm_button"] == algorithm_selector_v0:
+        if settings["selected_algorithm"] == "v0":
             render_manager(screen, simulation_values["manager"])
             manager_event_loop(simulation_values["manager"], simulation_values["vehicles"], simulation_values["time_elapsed"])
-            algorithm_selector_v0.color = (255, 50, 50)
+            algorithm_selector_v0.color = selected_color
+            algorithm_selector_standard_traffic.color = not_selected_color
         else:
             driver_traffic_update_command(simulation_values["vehicles"], simulation_values["time_elapsed"])
             render_traffic_lights(screen, simulation_values["traffic_master"])
             traffic_event_loop(simulation_values["traffic_master"], simulation_values["time_elapsed"])
-            algorithm_selector_standard_traffic.color = (255, 50, 50)
+            algorithm_selector_standard_traffic.color = selected_color
+            algorithm_selector_v0.color = not_selected_color
+
+        display_playback_speed.text = settings["display_playback_speed"]
 
         # simulation_values["vehicles"] 'cpu'
         for vehicle in simulation_values["vehicles"]:

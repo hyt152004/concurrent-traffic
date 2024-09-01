@@ -170,7 +170,14 @@ def render_manager(screen: Surface, manager: Manager) -> None:
     for i, vehicle in enumerate(manager.vehicles):
         font = pygame.font.SysFont('Consolas', 15)
         text_surface = font.render(f"name: {vehicle.name}, vel: {vehicle.velocity:.2f}m/s, accel: {vehicle.acceleration:.2f}m/s^2", True, (0, 0, 0))
-        screen.blit(text_surface, (5,i*20 + 5))
+        screen.blit(text_surface, (5, i*20 + 5))
+
+def render_loop_times(screen: Surface, target_time: float, actual_time: float):
+    font = pygame.font.SysFont('Consolas', 15)
+    target_time_surface = font.render(f"target frame: {target_time:.5f}", True, (0, 0, 0))
+    actual_time_surface = font.render(f"actual frame: {actual_time:.5f}", True, (0, 0, 0))
+    screen.blit(target_time_surface, (screen.get_width()-200, 0 + 5))
+    screen.blit(actual_time_surface, (screen.get_width()-200, 20 + 5))
 
 def render_time(screen: Surface, time_elapsed) -> None: 
     """Render function for time indicator."""

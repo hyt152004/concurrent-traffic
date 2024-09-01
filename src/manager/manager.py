@@ -57,6 +57,7 @@ def manager_event_loop(manager: Manager, vehicles: list[Vehicle], cur_time: floa
 def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle], elapsed_time: float) -> list[Vehicle]:
     """Return list of new vehicles added to manager.vehicles."""
     new_vehicles = []
+    v_set = set(manager.vehicles)
     for vehicle in vehicles:
         # vehicle within manager radius? 
         route_position_of_vehicle = route_position_to_world_position(vehicle.route, vehicle.route_position)
@@ -65,7 +66,7 @@ def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle], elap
         distance_to_vehicle = np.linalg.norm(route_position_of_vehicle-manager.position)
 
         # vehicle already in list and within manager radius?
-        vehicle_in_list = any(manager_vehicle is vehicle for manager_vehicle in manager.vehicles)
+        vehicle_in_list = vehicle in v_set
 
         # append if not in list and inside radius
         if not vehicle_in_list and distance_to_vehicle <= manager.radius:
@@ -105,16 +106,16 @@ def get_collisions_between_two_vehicles(vehicle0: Vehicle, vehicle1: Vehicle, cu
 
     v0_angle = vehicle0.direction_angle
     v0_corner_vectors = []
-    v0_corner_vectors.append(np.array([0, 0]))
+    v0_corner_vectors.append(np.array([vehicle0.length/2, 0]))
     # v0_corner_vectors.append(np.array([vehicle0.length/2, -(vehicle0.width/2)]))
-    # v0_corner_vectors.append(np.array([-vehicle0.length/2, 0]))
+    v0_corner_vectors.append(np.array([-vehicle0.length/2, 0]))
     # v0_corner_vectors.append(np.array([-vehicle0.length/2, -(vehicle0.width/2)]))
 
     v1_angle = vehicle1.direction_angle
     v1_corner_vectors = []
-    v1_corner_vectors.append(np.array([0, 0]))
+    v1_corner_vectors.append(np.array([vehicle1.length/2, 0]))
     # v1_corner_vectors.append(np.array([vehicle1.length/2 + 3, -(vehicle1.width/2)]))
-    # v1_corner_vectors.append(np.array([-vehicle1.length/2, 0]))
+    v1_corner_vectors.append(np.array([-vehicle1.length/2, 0]))
     # v1_corner_vectors.append(np.array([-vehicle1.length/2, -(vehicle1.width/2)]))
 
     for v0_corner_vector in v0_corner_vectors:

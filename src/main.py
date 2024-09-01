@@ -46,7 +46,8 @@ def main() -> None:
 
     manager, traffic_master, nodes, curr_edges, routes, vehicles = load_preset(preset_name)
 
-    intersection_points = get_intersections(routes)
+    # intersection_points = get_intersections(routes)
+    intersection_points = []
     run_simulation(vehicles, nodes, curr_edges, routes, intersection_points, manager, traffic_master)
 
 

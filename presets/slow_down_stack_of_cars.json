@@ -1,11 +1,11 @@
 {
     "stored_vehicles": [
-        {"id": "vehicle_0", "name": "Camry", "route": "0s2", "route_position": 40, "velocity": 8},
-        {"id": "vehicle_1", "name": "Camry", "route": "0s2", "route_position": 30, "velocity": 8},
-        {"id": "vehicle_2", "name": "Camry", "route": "0s2", "route_position": 20, "velocity": 8},
-        {"id": "vehicle_3", "name": "Camry", "route": "0r1", "route_position": 10, "velocity": 8},
-        {"id": "vehicle_4", "name": "Camry", "route": "0s2", "route_position": 0, "velocity": 8},
-        {"id": "vehicle_5", "name": "stall", "route": "0s2", "route_position": 100, "velocity": 0}
+        {"id": "vehicle_0", "name": "Camry", "route": "0s2", "route_position": 40, "velocity": 12},
+        {"id": "vehicle_1", "name": "Camry", "route": "0s2", "route_position": 30, "velocity": 12},
+        {"id": "vehicle_20", "name": "Camry", "route": "0r1", "route_position": 90, "velocity": 0},
+        {"id": "vehicle_2", "name": "Camry", "route": "0r1", "route_position": 20, "velocity": 12},
+        {"id": "vehicle_3", "name": "Camry", "route": "0r1", "route_position": 10, "velocity": 12},
+        {"id": "vehicle_4", "name": "Camry", "route": "0s2", "route_position": 0, "velocity": 12}
     ],
   
     "nodes": [

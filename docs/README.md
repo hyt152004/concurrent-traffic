@@ -1,9 +1,35 @@
-# concurrent-traffic
-concurrent-traffic is a project to create an algorithm that removes traffic lights given that all vehicles have self-driving technology. In practice, vehicles from all four directions can be moving at the same time, avoidings each other with a safe distance. The algorithm is run by a manager that communicates with cars approaching an intersection.
+# Concurrent Traffic
 
-As part of this project is a traffic simulator made with pygame that gives us a means to provide input to the algorithm and a way to perceive the algorithm.
+Concurrent Traffic is a traffic simulator that runs a ***queue-based greedy algorithm*** which manages self-driving cars and eliminates the need for traffic lights completely. The algorithm enables intersections to flow in all directions simultaneously. As a result, it is significantly faster than a standard traffic light system and fully eliminates the possibility of congestion.
 
-Priorities of the algorithm:
-- Safety (avoids 100% collisions)
-- Comfort (no rapid accelerations/sharp turns)
-- Speed (faster and more efficient than a standard traffic light)
+Traffic concurrency is achieved by a central manager which asserts control over vehicles entering its radius. Using its context of vehicle trajectories, the manager computes and sends acceleration commands to orchestrate a harmonious set of vehicular pathings free of collisions.
+
+![concurrent_traffic_demo](concurrent_traffic_demo.gif)
+*Demonstration of concurrent-traffic algorithm*
+
+**Simulator Features:**
+
+- Playback Controls
+- Zoom
+- Presets
+- Advanced Logging
+- Algorithm Selector
+- Standard Traffic Simulation Mode *(WIP)*
+- Intersection Points calculation
+- Parametric Routing (Nodes, Edges)
+
+**Algorithm Features:**
+
+- Max Acceleration Speed and Top Speed (Comfort)
+- Minimum Safety Distance (Safety)
+- Desired Cruising Speed (Speed)
+- Manager Radius (Area of Control)
+- Flexible to Different Intersection Layouts
+
+**Libraries/Technologies:**
+
+- SciPy
+- NumPy
+- PyGame
+- JSON
+- Makefile

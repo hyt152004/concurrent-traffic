@@ -13,9 +13,8 @@ from classes.button import Button, restart_func, toggle_update, toggle_algorithm
 from manager.manager import Manager, manager_event_loop, detect_collisions
 from classes.node import Node
 from classes.edge import Edge
-from classes.route import Route, route_position_to_world_position
-from standard_traffic.traffic_light import TrafficLight
-from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop, reset_traffic
+from classes.route import Route
+from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop
 from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights, render_loop_times
 from .update import update_world
 from .helper import scroll_handler
@@ -113,7 +112,6 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         # simulation_values["vehicles"] 'cpu'
         for vehicle in simulation_values["vehicles"]:
             vehicle_event_loop(vehicle, simulation_values["time_elapsed"])
-
 
         # vehicle removal 
         for vehicle in simulation_values["vehicles"]:

@@ -13,9 +13,10 @@ from classes.button import Button, restart_func, toggle_update, toggle_algorithm
 from manager.manager import Manager, manager_event_loop, detect_collisions
 from classes.node import Node
 from classes.edge import Edge
-from classes.route import Route
-from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop
-from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights
+from classes.route import Route, route_position_to_world_position
+from standard_traffic.traffic_light import TrafficLight
+from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop, reset_traffic
+from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights, render_loop_times
 from .update import update_world
 from .helper import scroll_handler
 
@@ -128,8 +129,14 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         if detect_collisions(simulation_values["manager"], simulation_values["vehicles"], simulation_values["time_elapsed"]) == True:
             simulation_values["is_run"] = False
 
+
         # updates the screen
+        simulation_values["delta_time"] = 1 / 60
+        simulation_values["loop_time"] = simulation_values["clock"].tick(60) / 1000
+        if simulation_values["delta_time"] - simulation_values["loop_time"]  > 0:
+            pygame.time.wait(int((simulation_values["delta_time"] - simulation_values["loop_time"] ) * 1000)) # in milliseconds
+        render_loop_times(screen, simulation_values["delta_time"], simulation_values["loop_time"] )
+
         pygame.display.update()
-        simulation_values["delta_time"] = simulation_values["clock"].tick(60) / 1000
-        
+  
     pygame.quit()

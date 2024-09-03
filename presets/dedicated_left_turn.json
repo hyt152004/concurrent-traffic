@@ -1,17 +1,49 @@
-{
+{ 
     "stored_vehicles": [
-        {"id": "vehicle_1", "name": "Camry", "route": "0d2", "route_position": 15, "velocity": 20},
-        {"id": "vehicle_6", "name": "Accord", "route": "3r0", "route_position": 15, "velocity": 20},
-        {"id": "vehicle_7", "name": "Highlander", "route": "2r3", "route_position": 27, "velocity": 20},
-        {"id": "vehicle_8", "name": "Bugatti", "route": "1s3", "route_position": 8, "velocity": 20},
-        {"id": "vehicle_9", "name": "Ferrari", "route": "1r2", "route_position": 15, "velocity": 20},
-        {"id": "vehicle_10", "name": "Tesla Model 3", "route": "2s0", "route_position": 5, "velocity": 20},
-        {"id": "vehicle_11", "name": "Elantra", "route": "3s1", "route_position": 0, "velocity": 20},
-        {"id": "vehicle_12", "name": "Porsche 911", "route": "0d2", "route_position": 7.5, "velocity": 20},
-        {"id": "vehicle_13", "name": "Camaro", "route": "2l1", "route_position": -5, "velocity": 20},
-        {"id": "vehicle_14", "name": "Reventon", "route": "1r2", "route_position": 0, "velocity": 20},
-        {"id": "vehicle_00", "name": "Corolla", "route": "0l3", "route_position": -10, "velocity": 20},
-        {"id": "vehicle_02", "name": "Civic", "route": "3s1", "route_position": -10, "velocity": 20}
+      {"id": "vehicle_00", "name": "Camry", "route": "0s2", "route_position": 0, "velocity": 20},
+      {"id": "vehicle_01", "name": "Accord", "route": "0s2", "route_position": -30, "velocity": 20},
+      {"id": "vehicle_02", "name": "Mustang", "route": "0l3", "route_position": -90, "velocity": 20},
+      {"id": "vehicle_03", "name": "Camaro", "route": "0s2", "route_position": -120, "velocity": 20},
+      {"id": "vehicle_04", "name": "Altima", "route": "0s2", "route_position": -180, "velocity": 20},
+      {"id": "vehicle_05", "name": "3 Series", "route": "0l3", "route_position": -210, "velocity": 20},
+      {"id": "vehicle_06", "name": "A4", "route": "0s2", "route_position": -300, "velocity": 20},
+      {"id": "vehicle_07", "name": "C-Class", "route": "0r1", "route_position": -330, "velocity": 20},
+      {"id": "vehicle_08", "name": "Golf", "route": "0s2", "route_position": -420, "velocity": 20},
+      {"id": "vehicle_09", "name": "Sonata", "route": "0s2", "route_position": -510, "velocity": 20},
+      
+      {"id": "vehicle_10", "name": "Mazda3", "route": "2s0", "route_position": -10, "velocity": 20},
+      {"id": "vehicle_11", "name": "Impreza", "route": "2r3", "route_position": -70, "velocity": 20},
+      {"id": "vehicle_pp", "name": "Model S", "route": "2s0", "route_position": -130, "velocity": 20},
+      {"id": "vehicle_12", "name": "RX", "route": "2s0", "route_position": -210, "velocity": 20},
+      {"id": "vehicle_13", "name": "F-Type", "route": "2r3", "route_position": -240, "velocity": 20},
+      {"id": "vehicle_14", "name": "XC90", "route": "2s0", "route_position": -330, "velocity": 20},
+      {"id": "vehicle_15", "name": "911", "route": "2l1", "route_position": -360, "velocity": 20},
+      {"id": "vehicle_16", "name": "488", "route": "2s0", "route_position": -390, "velocity": 20},
+      {"id": "vehicle_17", "name": "Huracain", "route": "2s0", "route_position": -450, "velocity": 20},
+      {"id": "vehicle_18", "name": "Vantage", "route": "2s0", "route_position": -480, "velocity": 20},
+      {"id": "vehicle_19", "name": "Continental GT", "route": "2s0", "route_position": -510, "velocity": 20},
+      
+      {"id": "vehicle_20", "name": "Phantom", "route": "1l0", "route_position": 0, "velocity": 20},
+      {"id": "vehicle_21", "name": "720S", "route": "1s3", "route_position": -20, "velocity": 20},
+      {"id": "vehicle_22", "name": "Chiron", "route": "1r2", "route_position": -50, "velocity": 20},
+      {"id": "vehicle_23", "name": "Stinger", "route": "1l0", "route_position": -80, "velocity": 20},
+      {"id": "vehicle_24", "name": "TLX", "route": "1s3", "route_position": -140, "velocity": 20},
+      {"id": "vehicle_25", "name": "Q50", "route": "1s3", "route_position": -200, "velocity": 20},
+      {"id": "vehicle_26", "name": "Escalade", "route": "1s3", "route_position": -230, "velocity": 20},
+      {"id": "vehicle_27", "name": "Range Rover", "route": "1s3", "route_position": -280, "velocity": 20},
+      {"id": "vehicle_28", "name": "Grand Cherokee", "route": "1s3", "route_position": -310, "velocity": 20},
+      {"id": "vehicle_29", "name": "Charger", "route": "1s3", "route_position": -340, "velocity": 20},
+      
+      {"id": "vehicle_30", "name": "300", "route": "3s1", "route_position": -42, "velocity": 20},
+      {"id": "vehicle_31", "name": "Sierra", "route": "3r0", "route_position": -82, "velocity": 20},
+      {"id": "vehicle_32", "name": "1500", "route": "3s1", "route_position": -112, "velocity": 20},
+      {"id": "vehicle_33", "name": "Silverado", "route": "3s1", "route_position": -150, "velocity": 20},
+      {"id": "vehicle_34", "name": "F-150", "route": "3s1", "route_position": -200, "velocity": 20},
+      {"id": "vehicle_35", "name": "Tacoma", "route": "3r0", "route_position": -240, "velocity": 20},
+      {"id": "vehicle_36", "name": "Civic", "route": "3s1", "route_position": -270, "velocity": 20},
+      {"id": "vehicle_37", "name": "Elantra", "route": "3s1", "route_position": -320, "velocity": 20},
+      {"id": "vehicle_38", "name": "CX-5", "route": "3l2", "route_position": -358, "velocity": 20},
+      {"id": "vehicle_39", "name": "Rogue", "route": "3s1", "route_position": -388, "velocity": 20}
     ],
   
     "nodes": [
@@ -76,7 +108,7 @@
         {"id": "305",  "source": "302",  "target": "307"},
 
         {"id": "0r1",  "source": "007",  "target": "104", "center": [  7.5,  7.5], "clockwise": true,  "comment": "south to east"},
-        {"id": "0d2",  "source": "007",  "target": "204",                                              "comment": "south to north"},
+        {"id": "0s2",  "source": "007",  "target": "204",                                              "comment": "south to north"},
         {"id": "0l3",  "source": "006",  "target": "305", "center": [-10.5,  7.5], "clockwise": false, "comment": "south to west"},
 
         {"id": "1r2",  "source": "107",  "target": "204", "center": [  7.5, -7.5], "clockwise": true,  "comment": "east to north"},
@@ -95,7 +127,7 @@
   
     "routes": [
         {"id": "0r1", "source": "002", "intermediate": ["005", "0r1", "100"], "target": "101", "comment": "south to east"},
-        {"id": "0d2", "source": "002", "intermediate": ["005", "0d2", "200"], "target": "201", "comment": "south to north"},
+        {"id": "0s2", "source": "002", "intermediate": ["005", "0s2", "200"], "target": "201", "comment": "south to north"},
         {"id": "0l3", "source": "002", "intermediate": ["003", "004", "0l3"], "target": "301", "comment": "south to west"},
 
         {"id": "1r2", "source": "102", "intermediate": ["105", "1r2", "200"], "target": "201", "comment": "east to north"},
@@ -121,6 +153,6 @@
   
     "manager": {
       "position": [0, 0],
-      "radius": 50
+      "radius": 75
     }
   }

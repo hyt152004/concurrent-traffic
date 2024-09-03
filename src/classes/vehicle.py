@@ -148,7 +148,6 @@ def driver_traffic_update_command(vehicles: list, cur_time: float) -> None:
 MIN_LEADING_DIST = 30
 
 def update_driver_lead(vehicles: list) -> None:
-
     max_angle_diff = 20
     for i, trailing_v in enumerate(vehicles):
         cur_leading_v = trailing_v.leading_vehicle

@@ -8,7 +8,7 @@ from classes.route import route_position_to_world_position, direction_at_route_p
 from standard_traffic.traffic_master import TrafficMaster
 from standard_traffic.traffic_light import get_color, get_light_state
 from manager.manager import Manager, CAR_COLLISION_DISTANCE
-from classes.button import Button
+from classes.button import Button, is_selected
 from .helper import world_to_screen_vector, world_to_screen_scalar, create_rotation_matrix, rotate_vector
 from .simulator import WORLD_WIDTH, WORLD_HEIGHT, TOOLBAR_HEIGHT
 
@@ -185,7 +185,7 @@ def render_buttons(screen: Surface, buttons: list[Button]) -> None:
     """Render function for Buttons."""
     for b in buttons:
         b.y = screen.get_height()-TOOLBAR_HEIGHT+50
-        pygame.draw.rect(screen, b.hover_color if b.is_selected() else b.color, [b.x , b.y, b.width, b.height])
+        pygame.draw.rect(screen, b.hover_color if is_selected(b) else b.color, [b.x , b.y, b.width, b.height])
         if b.text != '':
             font = pygame.font.SysFont('Segoe UI', 15)
             text = font.render(b.text, 1, (255, 255, 255))

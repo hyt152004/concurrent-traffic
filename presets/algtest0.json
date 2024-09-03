@@ -3,24 +3,7 @@
     {"id": "vehicle_1", "name": "Camry", "route": "route_0", "route_position": -5, "velocity": 20},
     {"id": "vehicle_4", "name": "Q3", "route": "route_8", "route_position": -1, "velocity": 20},
     {"id": "vehicle_6", "name": "Accord", "route": "route_9", "route_position": -5, "velocity": 20},
-    {"id": "vehicle_7", "name": "Highlander", "route": "route_6", "route_position": 31, "velocity": 20},
-    {"id": "vehicle_8", "name": "Bugatti", "route": "route_3", "route_position": -27, "velocity": 20},
-    {"id": "vehicle_9", "name": "Ferrari", "route": "route_4", "route_position": -5, "velocity": 20},
-    {"id": "vehicle_10", "name": "Tesla Model 3", "route": "route_7", "route_position": -35, "velocity": 20},
-    {"id": "vehicle_11", "name": "Elantra", "route": "route_10", "route_position": -50, "velocity": 20},
-    {"id": "vehicle_12", "name": "Porsche 911", "route": "route_0", "route_position": -33, "velocity": 20},
-    {"id": "vehicle_13", "name": "Camaro", "route": "route_1", "route_position": -50, "velocity": 20},
-    {"id": "vehicle_14", "name": "Reventon", "route": "route_4", "route_position": -50, "velocity": 20},
-    {"id": "vehicle_00", "name": "Corolla", "route": "route_0", "route_position": -180, "velocity": 20},
-    {"id": "vehicle_01", "name": "Camry", "route": "route_0", "route_position": -125, "velocity": 20},
-    {"id": "vehicle_02", "name": "Civic", "route": "route_10", "route_position": -120, "velocity": 20},
-    {"id": "vehicle_03", "name": "RAV4", "route": "route_5", "route_position": -185, "velocity": 20},
-    {"id": "vehicle_04", "name": "Q3", "route": "route_8", "route_position": -116, "velocity": 20},
-    {"id": "vehicle_06", "name": "Accord", "route": "route_9", "route_position": -195, "velocity": 20},
-    {"id": "vehicle_07", "name": "Forte", "route": "route_6", "route_position": -155, "velocity": 20},
-    {"id": "vehicle_08", "name": "Ioniq", "route": "route_3", "route_position": -146, "velocity": 20},
-    {"id": "vehicle_09", "name": "Ferrari", "route": "route_4", "route_position": -125, "velocity": 20},
-    {"id": "vehicle_010", "name": "Tesla Model 3", "route": "route_7", "route_position": -195, "velocity": 20}
+    {"id": "vehicle_9", "name": "Ferrari", "route": "route_4", "route_position": -5, "velocity": 20}
   ],
 
   "nodes": [

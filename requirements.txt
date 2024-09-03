@@ -2,3 +2,4 @@ numpy
 pygame
 sympy
 scipy
+colorama

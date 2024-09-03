@@ -23,7 +23,7 @@ from classes.edge import Edge
 from classes.route import Route, route_position_to_world_position
 from standard_traffic.traffic_light import TrafficLight
 from standard_traffic.traffic_master import TrafficMaster, traffic_event_loop, reset_traffic
-from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights
+from .render import render_world, render_manager, render_vehicles, render_toolbar, render_title, set_zoomed_render, render_traffic_lights, render_loop_times
 from .update import update_world
 from .helper import scroll_handler, world_to_screen_scalar, world_to_screen_vector
 
@@ -135,17 +135,18 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         render_world(screen, nodes, edges, route_visible, intersection_points)
 
         render_vehicles(screen, vehicles)
-        render_toolbar(screen, time_elapsed, buttons)
-        render_title(screen)
 
         # manager 'cpu' or standard traffic 
         if selected_algorithm_button == algorithm_selector_v0:
             render_manager(screen, manager)
             manager_event_loop(manager, vehicles, time_elapsed)
-        else:
-            driver_traffic_update_command(vehicles, time_elapsed)
-            render_traffic_lights(screen, traffic_master)
-            traffic_event_loop(traffic_master, time_elapsed)
+        # else:
+        #     driver_traffic_update_command(vehicles, time_elapsed)
+        #     render_traffic_lights(screen, traffic_master)
+        #     traffic_event_loop(traffic_master, time_elapsed)
+        
+        render_toolbar(screen, time_elapsed, buttons)
+        render_title(screen)
 
         # vehicles 'cpu'
         for vehicle in vehicles:
@@ -166,8 +167,14 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
         if detect_collisions(manager, vehicles, time_elapsed) == True:
             is_run = False
 
+
         # updates the screen
+        delta_time = 1 / 60
+        loop_time = clock.tick(60) / 1000
+        if delta_time - loop_time > 0:
+            pygame.time.wait(int((delta_time - loop_time) * 1000)) # in milliseconds
+        render_loop_times(screen, delta_time, loop_time)
+
         pygame.display.update()
-        delta_time = clock.tick(60) / 1000
-        
+
     pygame.quit()

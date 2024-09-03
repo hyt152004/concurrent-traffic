@@ -3,17 +3,16 @@ from classes.vehicle import Vehicle, update_cmd
 from classes.route import Route, route_position_to_world_position, direction_at_route_position
 from itertools import combinations
 from scipy.optimize import minimize_scalar
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
+colorama_init()
 import logging
 
 CAR_COLLISION_DISTANCE = 2.5 # meters
 MINIMUM_CRUISING_SPEED = 0
 DESIRED_CRUISING_SPEED = 20
 MAX_ACCELERATION = 3.5
-
-from colorama import init as colorama_init
-from colorama import Fore
-from colorama import Style
-colorama_init()
 
 class Collision:
     """A Collision represents a collision between two Vehicles at a given time."""
@@ -86,7 +85,8 @@ def _update_manager_vehicle_list(manager: Manager, vehicles: list[Vehicle], elap
     manager.vehicles.extend(new_vehicles)
     return new_vehicles
 
-def corner_vector_to_pos(v_pos: np.ndarray, v_angle: float, vector: np.ndarray):
+def vehicle_vector_to_pos(v_pos: np.ndarray, v_angle: float, vector: np.ndarray) -> np.array:
+    """Converts a vector relative to vehicle position to world position"""
     x =  np.cos(np.deg2rad(v_angle)) * vector[0] + np.sin(np.deg2rad(v_angle)) * vector[1]
     y = -np.sin(np.deg2rad(v_angle)) * vector[0] + np.cos(np.deg2rad(v_angle)) * vector[1]
     return np.array([v_pos[0] + x, v_pos[1] + y])
@@ -104,23 +104,11 @@ def get_vehicle_collision(manager: Manager, vehicle: Vehicle, cur_time: float) -
 def get_collisions_between_two_vehicles(vehicle0: Vehicle, vehicle1: Vehicle, cur_time: float) -> Collision | None:
     vehicle_out_of_bounds_time = int(min(time_until_end_of_route(vehicle0, cur_time), time_until_end_of_route(vehicle1, cur_time)))
 
-    v0_angle = vehicle0.direction_angle
-    v0_corner_vectors = []
-    v0_corner_vectors.append(np.array([vehicle0.length/2, 0]))
-    # v0_corner_vectors.append(np.array([vehicle0.length/2, -(vehicle0.width/2)]))
-    v0_corner_vectors.append(np.array([-vehicle0.length/2, 0]))
-    # v0_corner_vectors.append(np.array([-vehicle0.length/2, -(vehicle0.width/2)]))
+    v0_vectors = [np.array([vehicle0.length/2, 0]), np.array([-vehicle0.length/2, 0])]
+    v1_vectors = [(np.array([vehicle1.length/2, 0])), np.array([-vehicle1.length/2, 0])]
 
-    v1_angle = vehicle1.direction_angle
-    v1_corner_vectors = []
-    v1_corner_vectors.append(np.array([vehicle1.length/2, 0]))
-    # v1_corner_vectors.append(np.array([vehicle1.length/2 + 3, -(vehicle1.width/2)]))
-    v1_corner_vectors.append(np.array([-vehicle1.length/2, 0]))
-    # v1_corner_vectors.append(np.array([-vehicle1.length/2, -(vehicle1.width/2)]))
-
-    for v0_corner_vector in v0_corner_vectors:
-        for v1_corner_vector in v1_corner_vectors:
-
+    for v0_vector in v0_vectors:
+        for v1_vector in v1_vectors:
             def distance_objective(t):
                 rp0 = route_pos_at_delta_time(vehicle0, t, cur_time)
                 rp1 = route_pos_at_delta_time(vehicle1, t, cur_time)
@@ -130,27 +118,20 @@ def get_collisions_between_two_vehicles(vehicle0: Vehicle, vehicle1: Vehicle, cu
                     return np.inf
                 a0 = direction_at_route_position(vehicle0.route, rp0)
                 a1 = direction_at_route_position(vehicle1.route, rp1)
-                v0_corner_vector_pos = corner_vector_to_pos(wp0, a0, v0_corner_vector)
-                v1_corner_vector_pos = corner_vector_to_pos(wp1, a1, v1_corner_vector)
+                v0_corner_vector_pos = vehicle_vector_to_pos(wp0, a0, v0_vector)
+                v1_corner_vector_pos = vehicle_vector_to_pos(wp1, a1, v1_vector)
                 return np.linalg.norm(v1_corner_vector_pos-v0_corner_vector_pos)
                 
             result = minimize_scalar(distance_objective, bounds=(0, vehicle_out_of_bounds_time), method='bounded')
-            if result.success:
-                time_of_collision = result.x + cur_time
-                if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
-                    if vehicle0.name == "Forte" and vehicle1.name == "Ioniq":
-                        rp0 = route_pos_at_delta_time(vehicle0, result.x, cur_time)
-                        rp1 = route_pos_at_delta_time(vehicle1, result.x, cur_time)
-                        wp0 = route_position_to_world_position(vehicle0.route, rp0)
-                        wp1 = route_position_to_world_position(vehicle1.route, rp1)
-                        a0 = direction_at_route_position(vehicle0.route, rp0)
-                        a1 = direction_at_route_position(vehicle1.route, rp1)
-                        v0_corner_vector_pos = corner_vector_to_pos(wp0, a0, v0_corner_vector)
-                        v1_corner_vector_pos = corner_vector_to_pos(wp1, a1, v1_corner_vector)
-                        print(f"distance was: {Fore.RED}{round(distance_objective(result.x), 2)}m{Style.RESET_ALL}")
-                        print(f"v0_corner_pos: ({Fore.YELLOW}{round(v0_corner_vector_pos[0], 2)}{Style.RESET_ALL},{Fore.YELLOW}{round(v0_corner_vector_pos[1], 2)}{Style.RESET_ALL})")
-                        print(f"v1_corner_pos: ({Fore.YELLOW}{round(v1_corner_vector_pos[0], 2)}{Style.RESET_ALL},{Fore.YELLOW}{round(v1_corner_vector_pos[1], 2)}{Style.RESET_ALL})")
-                    return Collision(vehicle0, vehicle1, time_of_collision)
+
+            if not result.success:
+                continue
+
+            time_of_collision = result.x + cur_time
+
+            if distance_objective(result.x) <= CAR_COLLISION_DISTANCE:
+                return Collision(vehicle0, vehicle1, time_of_collision)
+
     return None
     
 def route_pos_at_delta_time(vehicle: Vehicle, delta_time: float, cur_time: float) -> float:
@@ -215,11 +196,11 @@ def deter_vehicle_collisions(manager: Manager, vehicle: Vehicle, elapsed_time: f
         deceled_duration = 0
         attempts_to_deter_collision = 0
 
-        print(f"attempting to resolve collision between {Fore.LIGHTBLUE_EX}{collision.vehicle0.name}{Style.RESET_ALL} and {Fore.LIGHTBLUE_EX}{collision.vehicle1.name}{Style.RESET_ALL} at {Fore.GREEN}{round(collision.time, 3)}s{Style.RESET_ALL}")
-        print(f"vehicle to modify: {vehicle.name}")
+        # print(f"attempting to resolve collision between {Fore.LIGHTBLUE_EX}{collision.vehicle0.name}{Style.RESET_ALL} and {Fore.LIGHTBLUE_EX}{collision.vehicle1.name}{Style.RESET_ALL} at {Fore.GREEN}{round(collision.time, 3)}s{Style.RESET_ALL}")
+        # print(f"vehicle to modify: {vehicle.name}")
 
         while collision is not None:
-            # first and foremost if we've tried 3000 times to resolve this collision, just give up
+            # first and foremost if we've tried 300 times to resolve this collision, just give up
             if attempts_to_deter_collision >= 300:
                 raise RuntimeError("failed to deter collision in 300 attempts :(")
 
@@ -245,38 +226,21 @@ def deter_vehicle_collisions(manager: Manager, vehicle: Vehicle, elapsed_time: f
 
             # compose the command
             t = [elapsed_time,
-                elapsed_time + deceling_duration,
-                elapsed_time + deceling_duration + deceled_duration,
-                elapsed_time + deceling_duration + deceled_duration + accel_duration]
+                 elapsed_time + deceling_duration,
+                 elapsed_time + deceling_duration + deceled_duration,
+                 elapsed_time + deceling_duration + deceled_duration + accel_duration]
             a = [-MAX_ACCELERATION,
-                0,
-                MAX_ACCELERATION,
-                0]
+                 0,
+                 MAX_ACCELERATION,
+                 0]
             
-            route_pos_before_cmd = route_pos_at_delta_time(vehicle, collision.time-elapsed_time, elapsed_time)
             vehicle.command = update_cmd(vehicle.command, t, a, elapsed_time)
             vehicle_command_updated = True
-            route_pos_after_cmd = route_pos_at_delta_time(vehicle, collision.time-elapsed_time, elapsed_time)
-
-
-            if vehicle.name == "Forte":
-                print(collision.vehicle1.name)
-                # print("collision between Forte and Ioniq")
-
-                print(f"time of collision: {Fore.GREEN}{round(collision.time, 3)}s{Style.RESET_ALL}")
-                world_pos_v0 = route_position_to_world_position(vehicle.route, route_pos_after_cmd)
-                world_pos_v1 = route_position_to_world_position(collision.vehicle1.route, route_pos_at_delta_time(collision.vehicle1, collision.time-elapsed_time, elapsed_time))
-                # print(f"deceling duration: {Fore.GREEN}{round(deceling_duration, 3)}s{Style.RESET_ALL}")
-                # print(f"decelled duration: {Fore.GREEN}{round(deceled_duration, 3)}s{Style.RESET_ALL}")
-                print(f"position of {Fore.LIGHTBLUE_EX}{vehicle.name}{Style.RESET_ALL}: ({Fore.YELLOW}{round(world_pos_v0[0], 2)}m, {round(world_pos_v0[1], 2)}m{Style.RESET_ALL})")
-                print(f"position of {Fore.LIGHTBLUE_EX}{collision.vehicle1.name}{Style.RESET_ALL}: ({Fore.YELLOW}{round(world_pos_v1[0], 2)}m, {round(world_pos_v1[1], 2)}m{Style.RESET_ALL})")
-
             attempts_to_deter_collision += 1
             collision = get_collisions_between_two_vehicles(collision.vehicle0, collision.vehicle1, elapsed_time)
 
         manager.logger.info(f"{round(elapsed_time, 3)} - Command sent to {vehicle.name}({vehicle.id}) | T: {t}, A: {a}")
         collision = get_vehicle_collision(manager, vehicle, elapsed_time)
-
 
 def detect_collisions(manager: Manager, vehicles: list[Vehicle], cur_time: float) -> list[Collision]:
     """Detects when a collision has actually occurred."""

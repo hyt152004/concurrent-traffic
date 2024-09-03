@@ -59,26 +59,20 @@ def render_intersections(screen: Surface, intersection_points) -> None:
     """Render function for intersecting Routes."""
     for intersection in intersection_points:
         node_position = world_to_screen_vector(screen, np.array(list(intersection[2])), zoom_factor)
-        # pygame.draw.circle(screen, "blue", node_position, 3)
+        pygame.draw.circle(screen, "magenta", node_position, 3)
 
-def draw_safety_border_corner(screen: Surface, v_pos: np.ndarray, corner_vector: np.ndarray, v_angle: float):
+def draw_vehicle_safety_point(screen: Surface, v_pos: np.ndarray, corner_vector: np.ndarray, v_angle: float):
+    """Draw safety calculation points of vehicles"""
     x =  np.cos(np.deg2rad(v_angle)) * corner_vector[0] + np.sin(np.deg2rad(v_angle)) * corner_vector[1]
     y = -np.sin(np.deg2rad(v_angle)) * corner_vector[0] + np.cos(np.deg2rad(v_angle)) * corner_vector[1]
     pygame.draw.circle(screen, "green", (v_pos[0] + x, v_pos[1] + y), 3)
 
-def draw_safety_border(screen: Surface, v_pos: np.ndarray, v_width: float, v_length: float, v_angle: float):
-    safety_length = 0
-    safety_width = 0
 
-    left_top_corner_vector = [v_length/2 + safety_length, 0]
-    # right_top_corner_vector = [v_length/2 + safety_length, -(v_width/2 + safety_width)]
-    left_bot_corner_vector = [-(v_length/2 + safety_length), 0]
-    # right_bot_corner_vector = [-(v_length/2 + safety_length), -(v_width/2 + safety_width)]
-    draw_safety_border_corner(screen, v_pos, left_top_corner_vector, v_angle)
-    # draw_safety_border_corner(screen, v_pos, right_top_corner_vector, v_angle)
-    draw_safety_border_corner(screen, v_pos, left_bot_corner_vector, v_angle)
-    # draw_safety_border_corner(screen, v_pos, right_bot_corner_vector, v_angle)
-    
+def draw_vehicle_safety_points(screen: Surface, v_pos: np.ndarray, v_length: float, v_angle: float):
+    left_top_corner_vector = [v_length/2, 0]
+    left_bot_corner_vector = [-v_length/2, 0]
+    draw_vehicle_safety_point(screen, v_pos, left_top_corner_vector, v_angle)
+    draw_vehicle_safety_point(screen, v_pos, left_bot_corner_vector, v_angle)
 
 def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
     """Render function for Vehicles."""
@@ -116,7 +110,7 @@ def render_vehicles(screen: Surface, vehicles: list[Vehicle]) -> None:
             car_rect.center = vehicle_center_screen_pos
             screen.blit(img, car_rect)
 
-        draw_safety_border(screen, vehicle_center_screen_pos, vehicle_screen_width, vehicle_screen_length, vehicle_angle)
+        draw_vehicle_safety_points(screen, vehicle_center_screen_pos, vehicle_screen_length, vehicle_angle)
 
         vehicle_text_font = pygame.font.SysFont('Consolas', 12)
         text_surface = vehicle_text_font.render(vehicle.name, True, (139, 69, 19))

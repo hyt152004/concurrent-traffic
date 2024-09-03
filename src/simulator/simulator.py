@@ -141,9 +141,9 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             render_manager(screen, manager)
             manager_event_loop(manager, vehicles, time_elapsed)
         # else:
-            # driver_traffic_update_command(vehicles, time_elapsed)
-            # render_traffic_lights(screen, traffic_master)
-            # traffic_event_loop(traffic_master, time_elapsed)
+        #     driver_traffic_update_command(vehicles, time_elapsed)
+        #     render_traffic_lights(screen, traffic_master)
+        #     traffic_event_loop(traffic_master, time_elapsed)
         
         render_toolbar(screen, time_elapsed, buttons)
         render_title(screen)
@@ -163,15 +163,12 @@ def run_simulation(initial_vehicles: list[Vehicle], nodes: list[Node], edges: li
             update_world(delta_time * playback_speed_factor, vehicles)
             time_elapsed += delta_time * playback_speed_factor
 
-        # # checks if collision has occured
-        # if detect_collisions(manager, vehicles, time_elapsed) == True:
-        #     is_run = False
+        # checks if collision has occured
+        if detect_collisions(manager, vehicles, time_elapsed) == True:
+            is_run = False
 
 
         # updates the screen
-        # delta_time = clock.tick_busy_loop(60) / 1000
-
-
         delta_time = 1 / 60
         loop_time = clock.tick(60) / 1000
         if delta_time - loop_time > 0:
